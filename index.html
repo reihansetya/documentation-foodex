@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dokumentasi Foodex — Salesforce Enhancement</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #1b1f24;
+      --muted: #5c6672;
+      --line: #e2e6ea;
+      --accent: #0b6bcb;
+      --chip: #eef3f8;
+      --code: #f4f6f8;
+      --good: #1a7f37;
+      --good-bg: #e9f7ee;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font: 15px/1.65 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 96px;
+    }
+
+    header {
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 20px;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin: 0 0 8px;
+      letter-spacing: -.02em;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin: 40px 0 4px;
+      letter-spacing: -.01em;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    code {
+      font-family: "Cascadia Code", Consolas, "SF Mono", monospace;
+      font-size: .88em;
+      background: var(--code);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    /* ---- Menu cards ---- */
+    .menu {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    .card {
+      display: block;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 22px 24px;
+      text-decoration: none;
+      color: inherit;
+      background: var(--bg);
+      transition: border-color .15s, box-shadow .15s, transform .15s;
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 3px 14px rgba(11, 107, 203, .12);
+      transform: translateY(-2px);
+    }
+
+    .card h3 {
+      margin: 0 0 6px;
+      font-size: 17px;
+      color: var(--accent);
+    }
+
+    .card p {
+      margin: 0 0 14px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .card ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .card li {
+      margin-bottom: 2px;
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      padding: 2px 9px;
+      border-radius: 20px;
+      background: var(--chip);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .tag.good {
+      color: var(--good);
+      background: var(--good-bg);
+      border-color: #b6e0c4;
+    }
+
+    /* ---- Summary table ---- */
+    .scroll {
+      overflow-x: auto;
+      margin: 0 0 12px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 14px;
+      min-width: 520px;
+      border: 1px solid var(--line);
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      text-align: center;
+      font-weight: 600;
+      background: var(--chip);
+    }
+
+    td {
+      text-align: left;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f7f9fb;
+    }
+
+    td.num {
+      text-align: center;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 16px 0 0;
+    }
+
+    @media (max-width: 700px) {
+      .wrap {
+        padding: 24px 16px 64px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <header>
+      <h1>Dokumentasi Foodex</h1>
+      <p class="sub">
+        Dokumentasi teknis Foodex Salesforce Enhancement (Phase 2) — Apex class, test class,
+        dan Lightning Web Component beserta controller-nya.
+      </p>
+      <p class="sub" style="margin-top:8px">
+        Org <code>saastendev28@saasten.com.sb1</code> &middot; 12 Agustus 2026
+      </p>
+    </header>
+
+    <h2>Menu Dokumentasi</h2>
+    <p class="meta">Pilih dokumen di bawah untuk melihat detailnya.</p>
+
+    <div class="menu">
+
+      <a class="card" href="apexClassWithTestClass.html">
+        <h3>Apex Class &amp; Test Class &rarr;</h3>
+        <p>Daftar Apex class dan trigger dipasangkan dengan test class-nya masing-masing,
+          lengkap dengan angka coverage per class.</p>
+        <div class="stats">
+          <span class="tag">15 class baru</span>
+          <span class="tag">5 class existing</span>
+          <span class="tag good">Coverage 81&ndash;100%</span>
+        </div>
+        <ul>
+          <li>Class &amp; Trigger Baru (Reihan)</li>
+          <li>Trigger &amp; Class Existing (Enhance)</li>
+          <li>LWC Baru (Reihan)</li>
+          <li>Belum Punya Test Class</li>
+        </ul>
+      </a>
+
+      <a class="card" href="lwcComponents.html">
+        <h3>LWC Component &amp; Controller &rarr;</h3>
+        <p>Seluruh Lightning Web Component di <code>force-app/main/default/lwc/</code>
+          beserta Apex controller, method, dan target penempatannya.</p>
+        <div class="stats">
+          <span class="tag">11 komponen</span>
+          <span class="tag">5 controller</span>
+        </div>
+        <ul>
+          <li>Ringkasan Komponen &amp; Controller</li>
+          <li>Export / CSV Template</li>
+          <li>Import CSV</li>
+          <li>Quick Action (Record Page)</li>
+          <li>Controller &amp; Method yang Dipanggil</li>
+        </ul>
+      </a>
+
+    </div>
+
+    <h2>Ringkasan Angka</h2>
+    <p class="meta">Cakupan pekerjaan Phase 2 secara keseluruhan.</p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Kategori</th>
+            <th style="width:100px">Jumlah</th>
+            <th>Dokumen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Apex class &amp; trigger baru</td>
+            <td class="num">15</td>
+            <td><a href="apexClassWithTestClass.html#new">Apex Class &amp; Test Class</a></td>
+          </tr>
+          <tr>
+            <td>Trigger &amp; class existing (enhance)</td>
+            <td class="num">5</td>
+            <td><a href="apexClassWithTestClass.html#existing">Apex Class &amp; Test Class</a></td>
+          </tr>
+          <tr>
+            <td>Lightning Web Component</td>
+            <td class="num">11</td>
+            <td><a href="lwcComponents.html#ringkasan">LWC Component &amp; Controller</a></td>
+          </tr>
+          <tr>
+            <td>Apex controller untuk LWC</td>
+            <td class="num">5</td>
+            <td><a href="lwcComponents.html#controller">LWC Component &amp; Controller</a></td>
+          </tr>
+          <tr>
+            <td>Class belum punya test class</td>
+            <td class="num">1</td>
+            <td><a href="apexClassWithTestClass.html#none">Apex Class &amp; Test Class</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note">
+      Sumber angka coverage: hasil <code>sf apex run test</code> per class-name,
+      run 4 &ndash; 12 Agustus 2026.
+    </p>
+
+  </div>
+</body>
+
+</html>

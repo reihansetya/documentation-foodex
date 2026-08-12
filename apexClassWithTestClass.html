@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Apex Class &amp; Test Class — 12 Agustus 2026</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #1b1f24;
+      --muted: #5c6672;
+      --line: #e2e6ea;
+      --accent: #0b6bcb;
+      --chip: #eef3f8;
+      --code: #f4f6f8;
+      --warn: #b45309;
+      --good: #1a7f37;
+      --good-bg: #e9f7ee;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font: 15px/1.65 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 96px;
+    }
+
+    header {
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 20px;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin: 0 0 8px;
+      letter-spacing: -.02em;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin: 40px 0 4px;
+      letter-spacing: -.01em;
+    }
+
+    h2 .count {
+      color: var(--muted);
+      font-weight: 400;
+      font-size: 14px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    code {
+      font-family: "Cascadia Code", Consolas, "SF Mono", monospace;
+      font-size: .88em;
+      background: var(--code);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .scroll {
+      overflow-x: auto;
+      margin: 0 0 12px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 14px;
+      min-width: 640px;
+      border: 1px solid var(--line);
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      text-align: center;
+      font-weight: 600;
+      background: var(--chip);
+    }
+
+    td {
+      text-align: left;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f7f9fb;
+    }
+
+    tbody tr:hover {
+      background: #e8eff6;
+    }
+
+    td.num {
+      text-align: center;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pct {
+      display: inline-block;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 2px 9px;
+      border-radius: 20px;
+      background: var(--good-bg);
+      color: var(--good);
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      padding: 1px 7px;
+      border-radius: 20px;
+      background: var(--chip);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .tag.warn {
+      color: var(--warn);
+      border-color: var(--warn);
+    }
+
+    .tag.existing {
+      color: #7a5c00;
+      background: #fdf3d6;
+      border-color: #e4c96b;
+    }
+
+    nav {
+      background: var(--chip);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 8px;
+    }
+
+    nav ol {
+      margin: 0;
+      padding-left: 22px;
+      font-size: 14px;
+    }
+
+    nav li {
+      margin-bottom: 3px;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 16px 0 0;
+    }
+
+    @media (max-width: 700px) {
+      .wrap {
+        padding: 24px 16px 64px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <header>
+      <h1>Apex Class &amp; Test Class</h1>
+      <p class="sub">
+        Daftar Apex class &amp; trigger dengan tanda <code>@last modified by : Reihan Setya Abida</code>, dipasangkan
+        dengan test class-nya masing-masing — Foodex Salesforce Enhancement (Phase 2).
+      </p>
+      <p class="sub" style="margin-top:12px">
+        <strong>Keterangan section:</strong> <span class="tag existing">Existing</span> = trigger/class warisan
+        (bukan buatan Reihan, tanda <code>@author : Existing</code>) yang disentuh untuk enhancement — logic lama
+        tetap dipertahankan, hanya ditambah kondisi/penyesuaian. Sisanya adalah class/trigger baru buatan Reihan
+        (<code>@author : Reihan Setya Abida</code>).
+      </p>
+      <p class="sub" style="margin-top:8px">Tanggal: 12 Agustus 2026</p>
+    </header>
+
+    <nav>
+      <ol>
+        <li><a href="#new">Class &amp; Trigger Baru (Reihan)</a></li>
+        <li><a href="#existing">Trigger &amp; Class Existing (Enhance)</a></li>
+        <li><a href="#lwc">LWC Baru (Reihan)</a></li>
+        <li><a href="#none">Belum Punya Test Class</a></li>
+      </ol>
+    </nav>
+
+    <h2 id="new">Class &amp; Trigger Baru (Reihan) <span class="count">— 15 pasang</span></h2>
+    <p class="meta">Seluruhnya buatan Reihan (<code>@author : Reihan Setya Abida</code>), termasuk 3 trigger
+      dispatcher Trigger Action Framework.</p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:60px">No</th>
+            <th>Apex Class / Trigger</th>
+            <th>Test Class</th>
+            <th style="width:110px">Coverage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num">1</td>
+            <td><code>ErrorLogUtil</code></td>
+            <td><code>ErrorLogUtilTEST</code></td>
+            <td class="num"><span class="pct">100%</span></td>
+          </tr>
+          <tr>
+            <td class="num">2</td>
+            <td><code>LeadConversionService</code></td>
+            <td><code>LeadConversionServiceTEST</code></td>
+            <td class="num"><span class="pct">100%</span></td>
+          </tr>
+          <tr>
+            <td class="num">3</td>
+            <td><code>LeadTrigger</code></td>
+            <td><code>LeadTriggerTEST</code></td>
+            <td class="num"><span class="pct">100%</span></td>
+          </tr>
+          <tr>
+            <td class="num">4</td>
+            <td><code>MasterDataExportController</code></td>
+            <td><code>MasterDataExportControllerTEST</code></td>
+            <td class="num"><span class="pct">88%</span></td>
+          </tr>
+          <tr>
+            <td class="num">5</td>
+            <td><code>MasterDataImportController</code></td>
+            <td><code>MasterDataImportControllerTEST</code></td>
+            <td class="num"><span class="pct">95%</span></td>
+          </tr>
+          <tr>
+            <td class="num">6</td>
+            <td><code>SalesActivityController</code></td>
+            <td><code>SalesActivityControllerTest</code></td>
+            <td class="num"><span class="pct">96%</span></td>
+          </tr>
+          <tr>
+            <td class="num">7</td>
+            <td><code>SampleEvaluationRequestService</code></td>
+            <td><code>SampleEvaluationRequestServiceTEST</code></td>
+            <td class="num"><span class="pct">99%</span></td>
+          </tr>
+          <tr>
+            <td class="num">8</td>
+            <td><code>SampleOfferDetailTrigger</code></td>
+            <td><code>SampleOfferDetailTriggerTEST</code></td>
+            <td class="num"><span class="pct">100%</span></td>
+          </tr>
+          <tr>
+            <td class="num">9</td>
+            <td><code>SampleRequestProductController</code></td>
+            <td><code>SampleRequestProductControllerTEST</code></td>
+            <td class="num"><span class="pct">97%</span></td>
+          </tr>
+          <tr>
+            <td class="num">10</td>
+            <td><code>SampleRequestService</code></td>
+            <td><code>SampleRequestServiceTEST</code></td>
+            <td class="num"><span class="pct">92%</span></td>
+          </tr>
+          <tr>
+            <td class="num">11</td>
+            <td><code>SampleRequestTrigger</code></td>
+            <td><code>SampleRequestTriggerTEST</code></td>
+            <td class="num"><span class="pct">100%</span></td>
+          </tr>
+          <tr>
+            <td class="num">12</td>
+            <td><code>TA_AT_Lead_AU_LeadConversion</code></td>
+            <td><code>TA_AT_Lead_AU_LeadConversionTEST</code></td>
+            <td class="num"><span class="pct">100%</span></td>
+          </tr>
+          <tr>
+            <td class="num">13</td>
+            <td><code>TA_AT_SOD_AU_CreateSER</code></td>
+            <td><code>TA_AT_SOD_AU_CreateSERTEST</code></td>
+            <td class="num"><span class="pct">100%</span></td>
+          </tr>
+          <tr>
+            <td class="num">14</td>
+            <td><code>TA_AT_SR_AU_ProductOliCreation</code></td>
+            <td><code>TA_AT_SR_AU_ProductOliCreationTEST</code></td>
+            <td class="num"><span class="pct">100%</span></td>
+          </tr>
+          <tr>
+            <td class="num">15</td>
+            <td><code>OpptyCreateFromDroppedSRController</code></td>
+            <td><code>OpptyCreateFromDroppedSRControllerTEST</code></td>
+            <td class="num"><span class="pct">85%</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="existing">Trigger &amp; Class Existing (Enhance) <span class="count">— 5 pasang</span></h2>
+    <p class="meta">Warisan vendor sebelumnya (<code>@author : Existing</code>) — yang dikerjakan hanya perbaikan bug /
+      tambah
+      kondisi, bukan build baru. Kode lama tetap ada, tidak dihapus.</p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:60px">No</th>
+            <th>Apex Class / Trigger</th>
+            <th>Visualforce Page</th>
+            <th>Test Class</th>
+            <th style="width:110px">Coverage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num">1</td>
+            <td><code>Sample_Offer_Generate_PDF_Ctrl</code></td>
+            <td><code>Sample_Offer_Generate_PDF.page</code></td>
+            <td><code>Sample_Offer_Generate_PDF_Ctrl_test</code></td>
+            <td class="num"><span class="pct">95%</span></td>
+          </tr>
+          <tr>
+            <td class="num">2</td>
+            <td><code>SampleRequest_cekEstimateNotNull</code></td>
+            <td>&mdash;</td>
+            <td><code>SampleRequest_cekEstimateNotNullTEST</code></td>
+            <td class="num"><span class="pct">81%</span></td>
+          </tr>
+          <tr>
+            <td class="num">3</td>
+            <td><code>Trigger_Sample_Request</code></td>
+            <td>&mdash;</td>
+            <td><code>Test_Sample_Request</code></td>
+            <td class="num"><span class="pct">90%</span></td>
+          </tr>
+          <tr>
+            <td class="num">4</td>
+            <td><code>Trigger_SampleOffer_Detail_Status</code></td>
+            <td>&mdash;</td>
+            <td><code>Trigger_SampleOffer_Detail_StatusTEST</code></td>
+            <td class="num"><span class="pct">100%</span></td>
+          </tr>
+          <tr>
+            <td class="num">5</td>
+            <td><code>VF_Bon_Sample_controller</code></td>
+            <td><code>VF_Bon_Sample_IDR.page</code></td>
+            <td><code>VF_Bon_Sample_controller_test</code></td>
+            <td class="num"><span class="pct">100%</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="lwc">LWC Baru (Reihan) <span class="count">— 11 komponen</span></h2>
+    <p class="meta">Seluruhnya buatan Reihan (<code>@author : Reihan Setya Abida</code>). LWC tidak diukur via
+      <code>sf apex run test</code> — coverage di sini tidak berlaku.
+    </p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:60px">No</th>
+            <th>LWC Component</th>
+            <th style="width:140px">Last Modified</th>
+            <th>Keterangan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num">1</td>
+            <td><code>lwc_SalesActivityCheckInOut</code></td>
+            <td class="num">07-10-2026</td>
+            <td>Check-in / Check-out sales activity</td>
+          </tr>
+          <tr>
+            <td class="num">2</td>
+            <td><code>lwc_AccountCsvTemplate</code></td>
+            <td class="num">07-11-2026</td>
+            <td>Template CSV untuk import Account</td>
+          </tr>
+          <tr>
+            <td class="num">3</td>
+            <td><code>lwc_ProductCsvImport</code></td>
+            <td class="num">07-27-2026</td>
+            <td>Import master data Product via CSV</td>
+          </tr>
+          <tr>
+            <td class="num">4</td>
+            <td><code>lwc_OpptyCsvTemplate</code></td>
+            <td class="num">08-03-2026</td>
+            <td>Template CSV untuk import Opportunity</td>
+          </tr>
+          <tr>
+            <td class="num">5</td>
+            <td><code>lwc_OpportunityCsvImport</code></td>
+            <td class="num">08-03-2026</td>
+            <td>Import master data Opportunity via CSV</td>
+          </tr>
+          <tr>
+            <td class="num">6</td>
+            <td><code>lwc_SampleRequestCsvImport</code></td>
+            <td class="num">08-04-2026</td>
+            <td>Import master data Sample Request via CSV</td>
+          </tr>
+          <tr>
+            <td class="num">7</td>
+            <td><code>lwc_SampleRequestCsvTemplate</code></td>
+            <td class="num">08-04-2026</td>
+            <td>Template CSV untuk import Sample Request</td>
+          </tr>
+          <tr>
+            <td class="num">8</td>
+            <td><code>lwc_SampleRequestCreateProduct</code></td>
+            <td class="num">—</td>
+            <td>Tombol Create Product NPDR di record page Sample Request</td>
+          </tr>
+          <tr>
+            <td class="num">9</td>
+            <td><code>lwc_OpptyCreateFromDroppedSR</code></td>
+            <td class="num">08-10-2026</td>
+            <td>Buat Opportunity baru dari SR yang di-drop; berpasangan dengan
+              <code>OpptyCreateFromDroppedSRController</code>
+            </td>
+          </tr>
+          <tr>
+            <td class="num">10</td>
+            <td><code>lwc_ProductCsvTemplate</code></td>
+            <td class="num">08-12-2026</td>
+            <td>Export master data Product ke CSV</td>
+          </tr>
+          <tr>
+            <td class="num">11</td>
+            <td><code>lwc_OpptyClosedWonCsvTemplate</code></td>
+            <td class="num">08-12-2026</td>
+            <td>Export Opportunity Closed Won ke CSV</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="none">Belum Punya Test Class</h2>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Apex Class</th>
+            <th>Status</th>
+            <th>Catatan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>ProductService</code></td>
+            <td><span class="tag warn">Belum dipakai</span></td>
+            <td>Body kosong — dikonfirmasi belum dipakai. Kandidat dihapus, bukan dites.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note">
+      Sumber: hasil <code>sf apex run test</code> per class-name, run tanggal 4 Agustus 2026 s.d. 12 Agustus 2026, org
+      <code>saastendev28@saasten.com.sb1</code>. Angka coverage per baris diambil dari kolom Percent hasil run
+      masing-masing, bukan aggregate historis. <code>SampleRequest_cekEstimateNotNull</code>: satu skenario
+      (Approval_Status__c = Approved tanpa Estimate Finish Date) tidak bisa dites langsung karena sudah ditolak
+      validation rule org sendiri sebelum logic trigger relevan.
+    </p>
+
+  </div>
+</body>
+
+</html>

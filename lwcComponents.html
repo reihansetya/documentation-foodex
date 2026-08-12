@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LWC Component &amp; Controller — Foodex</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #1b1f24;
+      --muted: #5c6672;
+      --line: #e2e6ea;
+      --accent: #0b6bcb;
+      --chip: #eef3f8;
+      --code: #f4f6f8;
+      --warn: #b45309;
+      --good: #1a7f37;
+      --good-bg: #e9f7ee;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font: 15px/1.65 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 24px 96px;
+    }
+
+    header {
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 20px;
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin: 0 0 8px;
+      letter-spacing: -.02em;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    h2 {
+      font-size: 20px;
+      margin: 40px 0 4px;
+      letter-spacing: -.01em;
+    }
+
+    h2 .count {
+      color: var(--muted);
+      font-weight: 400;
+      font-size: 14px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    code {
+      font-family: "Cascadia Code", Consolas, "SF Mono", monospace;
+      font-size: .88em;
+      background: var(--code);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .scroll {
+      overflow-x: auto;
+      margin: 0 0 12px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 14px;
+      min-width: 760px;
+      border: 1px solid var(--line);
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      text-align: center;
+      font-weight: 600;
+      background: var(--chip);
+    }
+
+    td {
+      text-align: left;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f7f9fb;
+    }
+
+    tbody tr:hover {
+      background: #e8eff6;
+    }
+
+    td.num {
+      text-align: center;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      padding: 1px 7px;
+      border-radius: 20px;
+      background: var(--chip);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .tag.none {
+      color: var(--warn);
+      border-color: var(--warn);
+      background: #fdf3d6;
+    }
+
+    .tag.good {
+      color: var(--good);
+      background: var(--good-bg);
+      border-color: #b6e0c4;
+    }
+
+    nav {
+      background: var(--chip);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 8px;
+    }
+
+    nav ol {
+      margin: 0;
+      padding-left: 22px;
+      font-size: 14px;
+    }
+
+    nav li {
+      margin-bottom: 3px;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 16px 0 0;
+    }
+
+    @media (max-width: 700px) {
+      .wrap {
+        padding: 24px 16px 64px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <header>
+      <h1>LWC Component &amp; Controller</h1>
+      <p class="sub">
+        Daftar seluruh Lightning Web Component di
+        <code>force-app/main/default/lwc/</code> beserta Apex controller dan method yang dipanggil —
+        Foodex Salesforce Enhancement.
+      </p>
+      <p class="sub" style="margin-top:8px">Total: 11 komponen &middot; 5 Apex controller &middot; 12 Agustus 2026</p>
+    </header>
+
+    <nav>
+      <ol>
+        <li><a href="#ringkasan">Ringkasan Komponen &amp; Controller</a></li>
+        <li><a href="#export">Export / CSV Template</a></li>
+        <li><a href="#import">Import CSV</a></li>
+        <li><a href="#action">Quick Action (Record Page)</a></li>
+        <li><a href="#controller">Controller &amp; Method yang Dipanggil</a></li>
+      </ol>
+    </nav>
+
+    <h2 id="ringkasan">1. Ringkasan Komponen &amp; Controller</h2>
+    <p class="meta">Satu baris per komponen — controller, method, dan target penempatan.</p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:38px">No</th>
+            <th>LWC Component</th>
+            <th>Apex Controller</th>
+            <th>Method</th>
+            <th>Target</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="num">1</td>
+            <td><code>lwc_AccountCsvTemplate</code></td>
+            <td><code>MasterDataExportController</code></td>
+            <td><code>getAccounts</code></td>
+            <td>App / Record / Home / UrlAddressable</td>
+          </tr>
+          <tr>
+            <td class="num">2</td>
+            <td><code>lwc_OpptyCsvTemplate</code></td>
+            <td><code>MasterDataExportController</code></td>
+            <td><code>getAllOpportunity</code></td>
+            <td>App / Record / Home / UrlAddressable</td>
+          </tr>
+          <tr>
+            <td class="num">3</td>
+            <td><code>lwc_OpptyClosedWonCsvTemplate</code></td>
+            <td><code>MasterDataExportController</code></td>
+            <td><code>getClosedWonOpportunities</code>,
+              <code>getClosedWonOpportunityCount</code>
+            </td>
+            <td>App / Record / Home / UrlAddressable</td>
+          </tr>
+          <tr>
+            <td class="num">4</td>
+            <td><code>lwc_ProductCsvTemplate</code></td>
+            <td><code>MasterDataExportController</code></td>
+            <td><code>getProducts</code></td>
+            <td>App / Record / Home / UrlAddressable</td>
+          </tr>
+          <tr>
+            <td class="num">5</td>
+            <td><code>lwc_SampleRequestCsvTemplate</code></td>
+            <td><span class="tag none">Tanpa Apex</span></td>
+            <td>&mdash;</td>
+            <td>App / Record / Home / UrlAddressable</td>
+          </tr>
+          <tr>
+            <td class="num">6</td>
+            <td><code>lwc_OpportunityCsvImport</code></td>
+            <td><code>MasterDataImportController</code></td>
+            <td><code>importOpportunity</code></td>
+            <td>App / Record / Home / UrlAddressable</td>
+          </tr>
+          <tr>
+            <td class="num">7</td>
+            <td><code>lwc_ProductCsvImport</code></td>
+            <td><code>MasterDataImportController</code></td>
+            <td><code>importProducts</code></td>
+            <td>App / Record / Home / UrlAddressable</td>
+          </tr>
+          <tr>
+            <td class="num">8</td>
+            <td><code>lwc_SampleRequestCsvImport</code></td>
+            <td><code>MasterDataImportController</code></td>
+            <td><code>importSampleRequest</code></td>
+            <td>App / Record / Home / UrlAddressable</td>
+          </tr>
+          <tr>
+            <td class="num">9</td>
+            <td><code>lwc_SalesActivityCheckInOut</code></td>
+            <td><code>SalesActivityController</code></td>
+            <td><code>saveSalesActivity</code></td>
+            <td>RecordAction (ScreenAction) — <code>Account</code></td>
+          </tr>
+          <tr>
+            <td class="num">10</td>
+            <td><code>lwc_SampleRequestCreateProduct</code></td>
+            <td><code>SampleRequestProductController</code></td>
+            <td><code>createProductFromSr</code></td>
+            <td>RecordAction (ScreenAction) — <code>Sample_Request__c</code></td>
+          </tr>
+          <tr>
+            <td class="num">11</td>
+            <td><code>lwc_OpptyCreateFromDroppedSR</code></td>
+            <td><code>OpptyCreateFromDroppedSRController</code></td>
+            <td><code>getDroppedSampleRequests</code>, <code>createOpportunityFromDroppedSr</code></td>
+            <td>RecordAction (ScreenAction) — <code>Opportunity</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="export">2. Export / CSV Template <span class="count">— 5 komponen</span></h2>
+    <p class="meta">Komponen generate file CSV: header template kosong dan/atau data existing dari org.</p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Fungsi</th>
+            <th>Apex yang dipanggil</th>
+            <th>Wire adapter / Schema</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>lwc_AccountCsvTemplate</code></td>
+            <td>Download template CSV Account + export data Account existing</td>
+            <td><code>MasterDataExportController.getAccounts</code></td>
+            <td>&mdash;</td>
+          </tr>
+          <tr>
+            <td><code>lwc_OpptyCsvTemplate</code></td>
+            <td>Download template CSV Opportunity + export seluruh Opportunity</td>
+            <td><code>MasterDataExportController.getAllOpportunity</code></td>
+            <td>&mdash;</td>
+          </tr>
+          <tr>
+            <td><code>lwc_OpptyClosedWonCsvTemplate</code></td>
+            <td>Export Opportunity Closed Won (dengan pre-check jumlah record sebelum export)</td>
+            <td><code>MasterDataExportController.getClosedWonOpportunities</code><br>
+              <code>MasterDataExportController.getClosedWonOpportunityCount</code>
+            </td>
+            <td>&mdash;</td>
+          </tr>
+          <tr>
+            <td><code>lwc_ProductCsvTemplate</code></td>
+            <td>Download template CSV Product2 + export data Product existing</td>
+            <td><code>MasterDataExportController.getProducts</code></td>
+            <td><code>getObjectInfo</code>, <code>getPicklistValues</code><br>
+              schema: <code>Product2</code>, <code>Product2.Product_Category_2__c</code></td>
+          </tr>
+          <tr>
+            <td><code>lwc_SampleRequestCsvTemplate</code></td>
+            <td>Download template CSV Sample Request — header statis, murni client-side</td>
+            <td><span class="tag none">Tidak ada</span></td>
+            <td>&mdash;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="import">3. Import CSV <span class="count">— 3 komponen</span></h2>
+    <p class="meta">Upload CSV, validasi di client (termasuk validasi picklist via UI API), lalu kirim ke Apex.</p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Fungsi</th>
+            <th>Apex yang dipanggil</th>
+            <th>Wire adapter / Schema</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>lwc_OpportunityCsvImport</code></td>
+            <td>Import Opportunity dari CSV, konfirmasi sebelum commit</td>
+            <td><code>MasterDataImportController.importOpportunity</code></td>
+            <td><code>getObjectInfo</code>, <code>getPicklistValuesByRecordType</code>,
+              <code>LightningConfirm</code><br>
+              schema: <code>Opportunity</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>lwc_ProductCsvImport</code></td>
+            <td>Import Product2 dari CSV, validasi Family &amp; Product Category terhadap picklist org</td>
+            <td><code>MasterDataImportController.importProducts</code></td>
+            <td><code>getObjectInfo</code>, <code>getPicklistValues</code>, <code>LightningConfirm</code><br>
+              schema: <code>Product2</code>, <code>Product2.Family</code>,
+              <code>Product2.Product_Category_2__c</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>lwc_SampleRequestCsvImport</code></td>
+            <td>Import Sample Request dari CSV, validasi picklist per Record Type</td>
+            <td><code>MasterDataImportController.importSampleRequest</code></td>
+            <td><code>getObjectInfo</code>, <code>getPicklistValuesByRecordType</code>,
+              <code>LightningConfirm</code><br>
+              schema: <code>Sample_Request__c</code>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="action">4. Quick Action (Record Page) <span class="count">— 3 komponen</span></h2>
+    <p class="meta">Dipasang sebagai Screen Action di record page, bukan di App/Home page.</p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Object</th>
+            <th>Fungsi</th>
+            <th>Apex yang dipanggil</th>
+            <th>Wire adapter / Schema</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>lwc_SalesActivityCheckInOut</code></td>
+            <td><code>Account</code></td>
+            <td>Check In / Check Out sales activity dari record Account (ambil geolocation, simpan aktivitas)</td>
+            <td><code>SalesActivityController.saveSalesActivity</code></td>
+            <td><code>CloseActionScreenEvent</code></td>
+          </tr>
+          <tr>
+            <td><code>lwc_SampleRequestCreateProduct</code></td>
+            <td><code>Sample_Request__c</code></td>
+            <td>Create Product2 manual dari data Sample Request</td>
+            <td><code>SampleRequestProductController.createProductFromSr</code></td>
+            <td><code>getRecord</code>, <code>CloseActionScreenEvent</code><br>
+              schema: <code>Sample_Request__c.Code_Product__c</code>,
+              <code>Sample_Request__c.Product_Name__c</code>
+            </td>
+          </tr>
+          <tr>
+            <td><code>lwc_OpptyCreateFromDroppedSR</code></td>
+            <td><code>Opportunity</code></td>
+            <td>Buat Opportunity baru dari SR yang di-drop; pilih SR, beri nama Oppty, navigate ke record baru</td>
+            <td><code>OpptyCreateFromDroppedSRController.getDroppedSampleRequests</code><br>
+              <code>OpptyCreateFromDroppedSRController.createOpportunityFromDroppedSr</code>
+            </td>
+            <td><code>wire</code>, <code>NavigationMixin</code>, <code>CloseActionScreenEvent</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2 id="controller">5. Controller &amp; Method yang Dipanggil <span class="count">— 5 controller</span></h2>
+    <p class="meta">Dilihat dari sisi Apex: satu controller bisa dipakai beberapa komponen.</p>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Apex Controller</th>
+            <th>Method</th>
+            <th>Dipanggil oleh</th>
+            <th>Test Class</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td rowspan="5"><code>MasterDataExportController</code></td>
+            <td><code>getAccounts</code></td>
+            <td><code>lwc_AccountCsvTemplate</code></td>
+            <td rowspan="5"><span class="tag good">MasterDataExportControllerTEST</span></td>
+          </tr>
+          <tr>
+            <td><code>getAllOpportunity</code></td>
+            <td><code>lwc_OpptyCsvTemplate</code></td>
+          </tr>
+          <tr>
+            <td><code>getClosedWonOpportunities</code></td>
+            <td><code>lwc_OpptyClosedWonCsvTemplate</code></td>
+          </tr>
+          <tr>
+            <td><code>getClosedWonOpportunityCount</code></td>
+            <td><code>lwc_OpptyClosedWonCsvTemplate</code></td>
+          </tr>
+          <tr>
+            <td><code>getProducts</code></td>
+            <td><code>lwc_ProductCsvTemplate</code></td>
+          </tr>
+          <tr>
+            <td rowspan="3"><code>MasterDataImportController</code></td>
+            <td><code>importOpportunity</code></td>
+            <td><code>lwc_OpportunityCsvImport</code></td>
+            <td rowspan="3"><span class="tag good">MasterDataImportControllerTEST</span></td>
+          </tr>
+          <tr>
+            <td><code>importProducts</code></td>
+            <td><code>lwc_ProductCsvImport</code></td>
+          </tr>
+          <tr>
+            <td><code>importSampleRequest</code></td>
+            <td><code>lwc_SampleRequestCsvImport</code></td>
+          </tr>
+          <tr>
+            <td><code>SalesActivityController</code></td>
+            <td><code>saveSalesActivity</code></td>
+            <td><code>lwc_SalesActivityCheckInOut</code></td>
+            <td><span class="tag good">SalesActivityControllerTest</span></td>
+          </tr>
+          <tr>
+            <td><code>SampleRequestProductController</code></td>
+            <td><code>createProductFromSr</code></td>
+            <td><code>lwc_SampleRequestCreateProduct</code></td>
+            <td><span class="tag good">SampleRequestProductControllerTEST</span></td>
+          </tr>
+          <tr>
+            <td rowspan="2"><code>OpptyCreateFromDroppedSRController</code></td>
+            <td><code>getDroppedSampleRequests</code></td>
+            <td><code>lwc_OpptyCreateFromDroppedSR</code></td>
+            <td rowspan="2"><span class="tag good">OpptyCreateFromDroppedSRControllerTEST</span></td>
+          </tr>
+          <tr>
+            <td><code>createOpportunityFromDroppedSr</code></td>
+            <td><code>lwc_OpptyCreateFromDroppedSR</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note">
+      Catatan: <code>lwc_SampleRequestCsvTemplate</code> tidak memanggil Apex sama sekali — header template
+      di-hardcode di JS dan file di-generate langsung di browser.
+      Test class <code>SalesActivityControllerTest</code> penamaannya belum ikut konvensi
+      (<code>...TEST</code> kapital) seperti empat lainnya.
+    </p>
+
+  </div>
+</body>
+
+</html>
