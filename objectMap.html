@@ -8,7 +8,7 @@
 <style>
 /* Layout: one technical sheet — header, legend, wide relation map, focus bar, relation table, object cards grid. */
 :root {
-  --bg: #f5f6f8;
+  --bg: #ffffff;
   --surface: #ffffff;
   --sunk: #eef0f4;
   --fg: #17202b;
@@ -20,21 +20,10 @@
   --ext: #6b7280;
   --appr: #8a3c7a;
   --warn: #b42318;
-  --focus: #1f6feb;
+  --focus: #0b6bcb;
+  color-scheme: light;
   --font-sans: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: "Cascadia Code", Consolas, "SF Mono", monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0f1319; --surface: #161b23; --sunk: #1c222c; --fg: #e5e8ed; --muted: #98a2b1; --line: #2b333f;
-    --apex: #8f95f2; --flow: #3cc0b0; --user: #e3a14b; --ext: #9aa3af; --appr: #d48bc5; --warn: #f2877c; --focus: #6aa7ff;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0f1319; --surface: #161b23; --sunk: #1c222c; --fg: #e5e8ed; --muted: #98a2b1; --line: #2b333f;
-  --apex: #8f95f2; --flow: #3cc0b0; --user: #e3a14b; --ext: #9aa3af; --appr: #d48bc5; --warn: #f2877c; --focus: #6aa7ff;
-  color-scheme: dark;
 }
 * { box-sizing: border-box; }
 body {
