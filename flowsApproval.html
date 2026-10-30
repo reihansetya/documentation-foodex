@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flow &amp; Approval Process — Foodex</title>
+  <style>
+    :root {
+      --bg: #ffffff; --fg: #1b1f24; --muted: #5c6672; --line: #e2e6ea; --accent: #0b6bcb;
+      --chip: #eef3f8; --code: #f4f6f8; --good: #1a7f37; --good-bg: #e9f7ee;
+      --warn: #b45309; --warn-bg: #fdf3d6; --bad: #b42318; --bad-bg: #fdecea;
+      --flow: #0d7a70; --apex: #4b50b8; --ui: #a3600f; --appr: #8a3c7a;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.65 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 24px 96px; }
+    .topnav { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; margin-bottom: 22px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+    .topnav a { color: var(--accent); text-decoration: none; }
+    .topnav a:hover { text-decoration: underline; }
+    .topnav a.here { color: var(--fg); font-weight: 600; pointer-events: none; }
+    header { border-bottom: 2px solid var(--line); padding-bottom: 20px; margin-bottom: 28px; }
+    h1 { font-size: 28px; margin: 0 0 8px; letter-spacing: -.02em; }
+    .sub { color: var(--muted); font-size: 14px; margin: 0; max-width: 90ch; }
+    h2 { font-size: 20px; margin: 44px 0 4px; letter-spacing: -.01em; }
+    h2 .count, h3 .count { color: var(--muted); font-weight: 400; font-size: 14px; }
+    h3 { font-size: 16px; margin: 26px 0 6px; }
+    .meta { color: var(--muted); font-size: 13px; margin: 0 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+    p, li { max-width: 90ch; }
+    a { color: var(--accent); }
+    code { font-family: "Cascadia Code", Consolas, "SF Mono", monospace; font-size: .86em; background: var(--code); padding: 1px 5px; border-radius: 4px; }
+    .scroll { overflow-x: auto; margin: 0 0 12px; }
+    table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 720px; border: 1px solid var(--line); }
+    th, td { padding: 10px 12px; border: 1px solid var(--line); vertical-align: top; }
+    th { text-align: center; font-weight: 600; background: var(--chip); }
+    td { text-align: left; }
+    tbody tr:nth-child(even) { background: #f7f9fb; }
+    tbody tr:hover { background: #e8eff6; }
+    td.num { text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .pct { display: inline-block; font-weight: 600; font-size: 13px; padding: 2px 9px; border-radius: 20px; background: var(--good-bg); color: var(--good); }
+    .pct.mid { background: var(--warn-bg); color: var(--warn); }
+    .pct.none { background: var(--chip); color: var(--muted); font-weight: 500; }
+    .tag { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .04em; padding: 1px 7px; border-radius: 20px; background: var(--chip); border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+    .tag.existing { color: #7a5c00; background: #fdf3d6; border-color: #e4c96b; }
+    .tag.bad { color: var(--bad); background: var(--bad-bg); border-color: #f4b8b2; }
+    .tag.flow { color: var(--flow); } .tag.apex { color: var(--apex); } .tag.ui { color: var(--ui); } .tag.appr { color: var(--appr); }
+    nav.toc { background: var(--chip); border: 1px solid var(--line); border-radius: 8px; padding: 16px 20px; margin-bottom: 8px; }
+    nav.toc ol { margin: 0; padding-left: 22px; font-size: 14px; columns: 2; column-gap: 32px; }
+    nav.toc li { margin-bottom: 3px; }
+    .note { border-left: 4px solid var(--warn); background: var(--warn-bg); padding: 10px 14px; border-radius: 4px; margin: 12px 0; font-size: 14px; max-width: none; }
+    .note.info { border-left-color: var(--accent); background: var(--chip); }
+    .foot { color: var(--muted); font-size: 13px; margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; margin-top: 20px; }
+    .card { display: block; border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; text-decoration: none; color: inherit; background: var(--bg); transition: border-color .15s, box-shadow .15s, transform .15s; }
+    .card:hover { border-color: var(--accent); box-shadow: 0 3px 14px rgba(11, 107, 203, .12); transform: translateY(-2px); }
+    .card h3 { margin: 0 0 6px; font-size: 17px; color: var(--accent); }
+    .card p { margin: 0 0 14px; font-size: 14px; color: var(--muted); }
+    .card ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--muted); }
+    .stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    @media (max-width: 700px) { .wrap { padding: 20px 16px 64px; } nav.toc ol { columns: 1; } h1 { font-size: 24px; } }
+    @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topnav"><a href="index.html">Menu</a><a href="apexClassWithTestClass.html">Apex Class &amp; Test Class</a><a href="lwcComponents.html">LWC &amp; Controller</a><a href="flowsApproval.html" class="here">Flow &amp; Approval</a><a href="objectMap.html">Peta Automasi per Object</a></div>
+    <header>
+      <h1>Flow &amp; Approval Process</h1>
+      <p class="sub">Record-triggered flow, screen flow, dan approval process enhancement Phase 2 yang aktif. Flow draft, obsolete, dan approval lama yang inactive tidak dicantumkan.</p>
+      <p class="sub" style="margin-top:8px">18 record-triggered &middot; 7 screen &middot; 1 scheduled (existing) &middot; 4 approval &middot; 30 Oktober 2026</p>
+    </header>
+
+    <nav class="toc"><ol>
+      <li><a href="#rtf">Record-triggered flow</a></li>
+      <li><a href="#scr">Screen flow &amp; quick action</a></li>
+      <li><a href="#existing">Flow existing yang disesuaikan</a></li>
+      <li><a href="#approval">Approval process</a></li>
+    </ol></nav>
+
+<h2 id="rtf">Record-triggered flow <span class="count">— 18</span></h2><p class="meta">Naming <code>&lt;Object&gt;_TRG_&lt;Fungsi&gt;</code>. Diurutkan per object.</p>
+<div class="scroll"><table><thead><tr><th style="width:48px">No</th><th>Object</th><th>Flow</th><th style="width:120px">Timing</th><th>Kondisi masuk</th><th>Hasil</th></tr></thead><tbody>
+<tr><td class="num">1</td><td><code>Lead</code></td><td><code>Lead_TRG_BantRatingScore</code></td><td>Before · Create + Update</td><td>Record baru atau checkbox BANT berubah</td><td>Rating: 3–4 poin Hot, 2 Warm, lainnya Cold</td></tr>
+<tr><td class="num">2</td><td><code>Account</code></td><td><code>Account_TRG_Update_Is_Key_Account</code></td><td>Before · Create + Update</td><td>Semua record</td><td>Is_Key_Account__c mengikuti Owner.Is_Key_Account_Manager__c</td></tr>
+<tr><td class="num">3</td><td><code>Opportunity</code></td><td><code>Oppty_TRG_Filled_in_Project_Name</code></td><td>Before · Create</td><td>Project_Name__c kosong, AccountId terisi</td><td>Project_Name__c diisi nama Account</td></tr>
+<tr><td class="num">4</td><td><code>Opportunity</code></td><td><code>Oppty_TRG_Update_End_Customer</code></td><td>After · Create + Update</td><td>End_Customer__c kosong, Account baru/berubah</td><td>Account punya End_Customer_From__c: End_Customer__c = Account awal, AccountId = End_Customer_From__c</td></tr>
+<tr><td class="num">5</td><td><code>Sample_Request__c</code></td><td><code>SR_TRG_Auto_Close_Lost_Oppty_When_All_Drop</code></td><td>After · Update</td><td>Customer_Feedback__c = Drop</td><td>Semua SR di Opportunity Drop → Closed Lost, Loss Reason &quot;Closed by System&quot;</td></tr>
+<tr><td class="num">6</td><td><code>Sample_Request__c</code></td><td><code>SR_TRG_Migration_Auto_Finish_and_Auto_Closed_Won_Opportunity</code></td><td>After · Create + Update</td><td>Hanya Opportunity__r.Is_Migrated__c = true</td><td>SR data migrasi diselesaikan, Opportunity Closed Won</td></tr>
+<tr><td class="num">7</td><td><code>Sample_Offer_Detail__c</code></td><td><code>SOD_TRG_Stamp_Remark</code></td><td>After · Update</td><td>Notes__c berubah</td><td>Remark__c pada SR dan OLI diisi dari Notes__c</td></tr>
+<tr><td class="num">8</td><td><code>Sample_Evaluation_Request__c</code></td><td><code>SER_TRG_ApprovalValidation</code></td><td>Before · Update</td><td>SER_Type__c = Evaluation</td><td>Tolak Approved bila Estimate_Finish_By_R_D__c kosong</td></tr>
+<tr><td class="num">9</td><td><code>Quote</code></td><td><code>Quote_TRG_Update_Oppty_to_Close_Won</code></td><td>After · Update</td><td>Tanpa kriteria start (lihat catatan)</td><td>Opportunity terkait → Closed Won bila belum</td></tr>
+<tr><td class="num">10</td><td><code>Order</code></td><td><code>Order_TRG_Auto_Fill_Effective_Date</code></td><td>Before · Create</td><td>Semua Order baru</td><td>EffectiveDate = TODAY()</td></tr>
+<tr><td class="num">11</td><td><code>Order</code></td><td><code>Order_TRG_MappingParentAccountWithForecast</code></td><td>After · Create + Update</td><td>AccountId terisi, Forecast_Order__c kosong</td><td>Parent_Account__c dan Forecast_Order__c</td></tr>
+<tr><td class="num">12</td><td><code>Order_Line_Item__c</code></td><td><code>OrderLineItem_TRG_Calulated_Value</code></td><td>Before · Create + Update</td><td>Semua record</td><td>Ordered_Value__c dan Delivered_Value__c = quantity × Price__c</td></tr>
+<tr><td class="num">13</td><td><code>Order_Line_Item__c</code></td><td><code>OrderLineItem_TRG_Mapping_Forecast</code></td><td>Before · Create + Update</td><td>Product &amp; Delivery Date terisi, forecast kosong</td><td>Forecast_Order__c (AOP) dan Forecast_Order_MFC__c (MFC)</td></tr>
+<tr><td class="num">14</td><td><code>Order_Line_Item__c</code></td><td><code>Order_Line_Item_TRG_Mapping_Account</code></td><td>Before · Update</td><td>Account__c kosong</td><td>Account__c = Order__r.Parent_Account__c</td></tr>
+<tr><td class="num">15</td><td><code>Order_Line_Item__c</code></td><td><code>Order_Line_Item_TRG_Update_Opportunity_Product</code></td><td>Before · Update</td><td>Opportunity__c terisi, Opportunity_Product__c kosong</td><td>Link ke OLI dengan Code_Product__c yang sama</td></tr>
+<tr><td class="num">16</td><td><code>Product2</code></td><td><code>Product_TRG_Stamping_External_Id</code></td><td>Before · Create</td><td>ProductCode terisi</td><td>External_ID__c = ProductCode (hanya saat create)</td></tr>
+<tr><td class="num">17</td><td><code>Product2</code></td><td><code>Product_TRGVR_Check_Duplicate</code></td><td>After · Create</td><td>Semua Product baru</td><td>Tolak ProductCode yang sudah dipakai</td></tr>
+<tr><td class="num">18</td><td><code>Forecast_Sales__c</code></td><td><code>Forecast_TRG_Mapping_Account_to_Parent_Account</code></td><td>After · Create</td><td>Account__c terisi</td><td>Account__c dipindah ke parent account</td></tr>
+</tbody></table></div>
+<p class="note"><code>Quote_TRG_Update_Oppty_to_Close_Won</code> belum memfilter <code>Status = Accepted</code>: update Quote apa pun bisa membuat Opportunity Closed Won. <code>Order_TRG_Auto_Fill_Effective_Date</code> selalu mengisi tanggal load, sehingga tanggal dari file SAP tertimpa.</p>
+<h2 id="scr">Screen flow &amp; quick action <span class="count">— 7</span></h2><p class="meta">Dijalankan user dari tombol di record page atau list view.</p>
+<div class="scroll"><table><thead><tr><th style="width:48px">No</th><th>Flow</th><th>Dijalankan dari</th><th>Fungsi</th></tr></thead><tbody>
+<tr><td class="num">1</td><td><code>Lead_SCR_Create_Sample_Request</code></td><td>Lead.Create_Sample_Request</td><td>Buat SR dari Lead (BPS/NPDR, siklus Add More, tanpa Back). Lead Status Open → Working.</td></tr>
+<tr><td class="num">2</td><td><code>Lead_SCR_Selected_Sample_Request</code></td><td>Lead.Select_Sample_Request</td><td>Pilih SR yang ikut convert: Selected_Sample_Request__c + Sample_Request_Count__c.</td></tr>
+<tr><td class="num">3</td><td><code>Opportunity_SCR_Create_Sample_Request</code></td><td>Opportunity.Create_Sample_Request / Create_Sample_Request_Opportunity</td><td>Buat SR dari Opportunity; Stage Start → Sample Request.</td></tr>
+<tr><td class="num">4</td><td><code>SR_SCR_Create_General_Request</code></td><td>List view Sample Request</td><td>General Request BPS per Account tanpa Opportunity (Is_General_Promo__c).</td></tr>
+<tr><td class="num">5</td><td><code>SR_SCR_UpdateStatusFinish</code></td><td>Sample_Request__c.Sample_Request_Finish</td><td>Request Status = Finish, Sample Request Status = Sample Finish.</td></tr>
+<tr><td class="num">6</td><td><code>SER_SCR_UpdateStatusFinish</code></td><td>Sample_Evaluation_Request__c.Sample_Evaluation_Request_Finish</td><td>SER Approved + Estimate terisi → Status Sample Finish.</td></tr>
+<tr><td class="num">7</td><td><code>SER_SCR_SyncToSampleRequest</code></td><td>Sample_Evaluation_Request__c.Sync_to_Sample_Request</td><td>System mode: salin hasil SER ke SR asal, set Is_Synced__c / Synced_Date__c, lepas flag sync SER lama.</td></tr>
+</tbody></table></div>
+<p class="note info">Flow pembuatan SR sengaja membuat SR satu per satu di dalam loop dan tanpa tombol Back di layar detail, karena trigger SR existing tidak bulk-safe dan Back setelah create menghasilkan SR dobel.</p>
+<h2 id="existing">Flow existing yang disesuaikan <span class="count">— 1</span></h2><p class="meta"><span class="tag existing">Existing</span> Warisan vendor sebelumnya.</p>
+<div class="scroll"><table><thead><tr><th>Flow</th><th>Tipe</th><th>Perubahan</th></tr></thead><tbody>
+<tr><td><code>Sample_Request_Auto_Closed_After_Period_of_Time_Without_Update</code></td><td>Scheduled, harian</td><td>Versi 6: alert berkala 2–12 minggu, auto-close setelah 180 hari tanpa perubahan status SR (sebelumnya 3 bulan). Max batch size 50.</td></tr>
+</tbody></table></div>
+<p class="note info">Setelah scheduled flow diaktifkan ulang, cek Setup → Scheduled Jobs dan pastikan Next Scheduled Run terisi.</p>
+<h2 id="approval">Approval process <span class="count">— 4</span></h2><p class="meta">Dipisah per Product Type karena approver Manufacturing dan Trading berbeda. Approver ditetapkan per user; final approval tidak mengunci record.</p>
+<div class="scroll"><table><thead><tr><th>Approval Process</th><th>Object</th><th>Entry criteria</th><th>Step &amp; approver</th><th>Aksi</th></tr></thead><tbody>
+<tr><td><code>SR_Manufacturing_Approval</code></td><td><code>Sample_Request__c</code></td><td>Product_Type__c = Manufacturing; profile bukan Distributor; belum Approved</td><td>BPS: R&amp;D (Tefi Heryanti)<br>NPDR: PCM (Jenny Rusli) → R&amp;D (Imtikhanah)</td><td>Final Approved / Rejected. Recall diizinkan tanpa recall action.</td></tr>
+<tr><td><code>SR_Trading_Approval</code></td><td><code>Sample_Request__c</code></td><td>Product_Type__c = Trading; profile bukan Distributor; belum Approved</td><td>BPS: R&amp;D Trading (Monica Anastasha)<br>NPDR: CRM (Gunawan Pitrahalim) → R&amp;D Trading (Monica Anastasha)</td><td>Sama dengan SR_Manufacturing_Approval.</td></tr>
+<tr><td><code>SER_Manufacturing_Approval</code></td><td><code>Sample_Evaluation_Request__c</code></td><td>SER_Type__c = Evaluation; Manufacturing; belum Approved; Is_Synced__c = false</td><td>R&amp;D (Tefi Heryanti)</td><td>Approve: Approved + Sample on Process + email. Reject: Rejected + email. Recall tidak diizinkan.</td></tr>
+<tr><td><code>SER_Trading_Approval</code></td><td><code>Sample_Evaluation_Request__c</code></td><td>SER_Type__c = Evaluation; Trading; belum Approved; Is_Synced__c = false</td><td>R&amp;D Trading (Monica Anastasha)</td><td>Sama dengan SER_Manufacturing_Approval.</td></tr>
+</tbody></table></div>
+<p class="note info">Nama approval SR dipakai hardcode di trigger <code>SampleRequest_cekEstimateNotNull</code> (query <code>ProcessInstance</code>). Rename approval process = trigger ikut diubah.</p>
+    <p class="foot">Sumber: source repository <code>SB1FoodexReihan</code> (<code>force-app/main/default</code>) per 29 Oktober 2026 dan sheet Deployment Items pada MOP <code>L.00387.08.26.DHU.C</code> (deploy production 27&ndash;28 Agustus 2026). Hanya komponen yang aktif dan dipakai yang dicantumkan. Diperbarui 30 Oktober 2026.</p>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="id">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peta Automasi per Object — Foodex</title>
+<style>
+/* Layout: one technical sheet — header, legend, wide relation map, focus bar, relation table, object cards grid. */
+:root {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --sunk: #eef0f4;
+  --fg: #17202b;
+  --muted: #5a6575;
+  --line: #d5dae2;
+  --apex: #4b50b8;
+  --flow: #0d7a70;
+  --user: #a3600f;
+  --ext: #6b7280;
+  --appr: #8a3c7a;
+  --warn: #b42318;
+  --focus: #1f6feb;
+  --font-sans: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "Cascadia Code", Consolas, "SF Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1319; --surface: #161b23; --sunk: #1c222c; --fg: #e5e8ed; --muted: #98a2b1; --line: #2b333f;
+    --apex: #8f95f2; --flow: #3cc0b0; --user: #e3a14b; --ext: #9aa3af; --appr: #d48bc5; --warn: #f2877c; --focus: #6aa7ff;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1319; --surface: #161b23; --sunk: #1c222c; --fg: #e5e8ed; --muted: #98a2b1; --line: #2b333f;
+  --apex: #8f95f2; --flow: #3cc0b0; --user: #e3a14b; --ext: #9aa3af; --appr: #d48bc5; --warn: #f2877c; --focus: #6aa7ff;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 14px/1.55 var(--font-sans);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 64px;
+}
+.wrap { max-width: 1400px; margin: 0 auto; display: grid; gap: 28px; }
+h1 { font-size: 26px; line-height: 1.2; margin: 0 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+h2 { font-size: 17px; margin: 0; text-wrap: balance; }
+.lede { color: var(--muted); max-width: 72ch; margin: 0; }
+.meta { font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-top: 8px; }
+code { font-family: var(--font-mono); font-size: 12px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.sw { width: 26px; height: 0; border-top: 2.5px solid currentColor; display: inline-block; }
+.sw.dash { border-top-style: dashed; }
+.k-apex { color: var(--apex); } .k-flow { color: var(--flow); } .k-user { color: var(--user); } .k-ext { color: var(--ext); }
+.legend .txt { color: var(--muted); }
+
+figure { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.mapscroll { overflow-x: auto; }
+.map { display: block; width: 100%; min-width: 980px; height: auto; font-family: var(--font-sans); }
+figcaption { border-top: 1px solid var(--line); padding: 10px 16px; font-size: 13px; color: var(--muted); }
+
+.node-box { fill: var(--surface); stroke: var(--line); stroke-width: 1.4; }
+.node .node-name { fill: var(--fg); font-size: 13.5px; font-weight: 600; }
+.node .node-api { fill: var(--muted); font-family: var(--font-mono); font-size: 10.5px; }
+.node .node-count { fill: var(--muted); font-size: 10.5px; }
+.node-ext .node-box { stroke-dasharray: 5 4; fill: var(--sunk); }
+.node { cursor: pointer; outline: none; }
+.node:hover .node-box, .node:focus-visible .node-box { stroke: var(--focus); stroke-width: 2; }
+
+.edge-line { fill: none; stroke-width: 1.8; }
+.edge-hit { fill: none; stroke: transparent; stroke-width: 12; }
+.e-apex .edge-line { stroke: var(--apex); }
+.e-flow .edge-line { stroke: var(--flow); }
+.e-user .edge-line { stroke: var(--user); }
+.e-ext .edge-line { stroke: var(--ext); stroke-dasharray: 6 4; }
+.ah-apex { fill: var(--apex); } .ah-flow { fill: var(--flow); } .ah-user { fill: var(--user); } .ah-ext { fill: var(--ext); }
+.badge { stroke-width: 1.4; fill: var(--surface); }
+.l-apex .badge { stroke: var(--apex); } .l-flow .badge { stroke: var(--flow); } .l-user .badge { stroke: var(--user); } .l-ext .badge { stroke: var(--ext); }
+.badge-no { font-size: 10.5px; font-weight: 600; fill: var(--fg); font-variant-numeric: tabular-nums; }
+.elabel-text { font-size: 11.5px; fill: var(--fg); paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.elabel[data-edge="16"] .elabel-text { fill: var(--warn); }
+
+.map .edge, .map .elabel, .map .node { transition: opacity .15s ease; }
+.map.focused .edge, .map.focused .elabel, .map.focused .node { opacity: .14; }
+.map.focused .on { opacity: 1; }
+.map.focused .edge.on .edge-line { stroke-width: 2.6; }
+.map .node.sel .node-box { stroke: var(--focus); stroke-width: 2.4; }
+
+.focusbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--sunk); font-size: 13px; }
+.focusbar strong { font-weight: 600; }
+button.reset { font: inherit; font-size: 13px; color: var(--focus); background: none; border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; cursor: pointer; }
+button.reset:focus-visible, .relchip:focus-visible, .card:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+section { display: grid; gap: 12px; }
+.sechead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+.sechead p { margin: 0; color: var(--muted); font-size: 13px; }
+.tablewrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; min-width: 860px; font-size: 13px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+th { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; background: var(--sunk); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; font-weight: 600; width: 40px; }
+td.comps code { display: inline-block; margin: 0 6px 3px 0; padding: 1px 6px; background: var(--sunk); border-radius: 4px; }
+tbody tr { cursor: pointer; }
+tbody tr:hover td { background: var(--sunk); }
+tr[hidden] { display: none; }
+.arr { color: var(--muted); }
+.pill { display: inline-block; font-size: 11.5px; font-weight: 600; padding: 1px 8px; border-radius: 20px; border: 1px solid currentColor; white-space: nowrap; }
+.p-apex { color: var(--apex); } .p-flow { color: var(--flow); } .p-user { color: var(--user); } .p-ext { color: var(--ext); }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; cursor: pointer; transition: border-color .15s ease, opacity .15s ease; }
+.card header { display: grid; gap: 2px; }
+.card h3 { margin: 0; font-size: 15px; }
+.capi { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); overflow-wrap: anywhere; }
+.clist { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+.clist li { display: grid; grid-template-columns: 118px minmax(0, 1fr); align-items: baseline; gap: 8px; }
+.clist code { overflow-wrap: anywhere; }
+.tchip { font-size: 11px; font-weight: 600; white-space: nowrap; }
+.t-flow { color: var(--flow); } .t-apex { color: var(--apex); } .t-ui { color: var(--user); } .t-appr { color: var(--appr); }
+.adj { grid-column: 2; font-size: 11px; color: var(--muted); margin-top: -3px; }
+.cnote { margin: 0; color: var(--muted); font-size: 13px; }
+.card footer { margin-top: auto; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding-top: 8px; border-top: 1px solid var(--line); }
+.rlabel { font-size: 11.5px; color: var(--muted); margin-right: 4px; }
+.relchip { font: 600 11.5px var(--font-sans); font-variant-numeric: tabular-nums; min-width: 26px; padding: 2px 6px; border: 1px solid var(--line); border-radius: 5px; background: var(--sunk); color: var(--fg); cursor: pointer; }
+.relchip:hover { border-color: var(--focus); }
+.cards.focused .card { opacity: .45; }
+.cards.focused .card.on { opacity: 1; border-color: var(--focus); }
+.foot { color: var(--muted); font-size: 13px; display: grid; gap: 4px; }
+.foot p { margin: 0; max-width: 90ch; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@media (max-width: 600px) { h1 { font-size: 22px; } .clist li { grid-template-columns: 1fr; gap: 0; } .adj { grid-column: 1; } }
+body { margin: 0; }
+.wrap { grid-template-columns: minmax(0, 1fr); }
+.wrap > * { min-width: 0; }
+.topnav { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.topnav a { color: var(--focus); text-decoration: none; }
+.topnav a:hover { text-decoration: underline; }
+.topnav a.here { color: var(--fg); font-weight: 600; pointer-events: none; }
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="topnav"><a href="index.html">Menu</a><a href="apexClassWithTestClass.html">Apex Class &amp; Test Class</a><a href="lwcComponents.html">LWC &amp; Controller</a><a href="flowsApproval.html">Flow &amp; Approval</a><a href="objectMap.html" class="here">Peta Automasi per Object</a></div>
+  <header>
+    <h1>Peta Automasi Foodex</h1>
+    <p class="lede">Relasi antar object Salesforce dan komponen enhancement yang menghubungkannya. Panah menunjuk ke object yang diisi atau diubah. Klik sebuah object, nomor relasi, atau baris tabel untuk menyorot jalurnya.</p>
+    <div class="meta">Sumber: source SB1FoodexReihan per 29/10/2026 · hanya komponen aktif · * = komponen lama yang disesuaikan</div>
+  </header>
+
+  <div class="legend" aria-label="Legenda warna relasi">
+    <span class="k-apex"><i class="sw"></i><b class="txt">Apex trigger action / service</b></span>
+    <span class="k-flow"><i class="sw"></i><b class="txt">Record-triggered flow</b></span>
+    <span class="k-user"><i class="sw"></i><b class="txt">Aksi user: screen flow, LWC, VF</b></span>
+    <span class="k-ext"><i class="sw dash"></i><b class="txt">Integrasi eksternal</b></span>
+  </div>
+
+  <figure>
+    <div class="mapscroll">
+<svg viewBox="0 0 1600 870" role="img" aria-label="Peta relasi antar object Salesforce Foodex dan komponen automasi yang menghubungkannya" class="map">
+<defs>
+<marker id="ah-apex" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ah-apex"/></marker>
+<marker id="ah-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ah-flow"/></marker>
+<marker id="ah-user" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ah-user"/></marker>
+<marker id="ah-ext" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="ah ah-ext"/></marker>
+</defs>
+<g class="edge e-apex" data-edge="1" data-from="lead" data-to="opp"><title>1. Lead → Opportunity: convert: SR terpilih pindah — TA_AT_Lead_AU_LeadConversion, LeadConversionService</title><path d="M420.0,110.0 L596.0,110.0" class="edge-hit"/><path d="M420.0,110.0 L596.0,110.0" class="edge-line" marker-end="url(#ah-apex)"/></g>
+<g class="edge e-user" data-edge="2" data-from="lead" data-to="sr"><title>2. Lead → Sample Request: buat &amp; pilih SR — Lead_SCR_Create_Sample_Request, Lead_SCR_Selected_Sample_Request</title><path d="M406.9,78.0 Q700,-30 982.3,74.0" class="edge-hit"/><path d="M406.9,78.0 Q700,-30 982.3,74.0" class="edge-line" marker-end="url(#ah-user)"/></g>
+<g class="edge e-user" data-edge="3" data-from="opp" data-to="sr"><title>3. Opportunity → Sample Request: buat SR / clone SR Drop — Opportunity_SCR_Create_Sample_Request, lwc_OpptyCreateFromDroppedSR, OpptyCreateFromDroppedSRController</title><path d="M800.0,110.0 L976.0,110.0" class="edge-hit"/><path d="M800.0,110.0 L976.0,110.0" class="edge-line" marker-end="url(#ah-user)"/></g>
+<g class="edge e-flow" data-edge="4" data-from="sr" data-to="opp"><title>4. Sample Request → Opportunity: semua Drop → Closed Lost — SR_TRG_Auto_Close_Lost_Oppty_When_All_Drop, SR_TRG_Migration_Auto_Finish_and_Auto_Closed_Won_Opportunity (data migrasi)</title><path d="M1022.1,142.0 Q890,215 765.1,146.0" class="edge-hit"/><path d="M1022.1,142.0 Q890,215 765.1,146.0" class="edge-line" marker-end="url(#ah-flow)"/></g>
+<g class="edge e-flow" data-edge="5" data-from="acc" data-to="opp"><title>5. Account → Opportunity: End Customer, Project Name — Oppty_TRG_Update_End_Customer, Oppty_TRG_Filled_in_Project_Name</title><path d="M384.0,268.0 L628.0,146.0" class="edge-hit"/><path d="M384.0,268.0 L628.0,146.0" class="edge-line" marker-end="url(#ah-flow)"/></g>
+<g class="edge e-user" data-edge="6" data-from="acc" data-to="sa"><title>6. Account → Sales Activity: Check In / Out — aura_SalesActivityCheckInOut, lwc_SalesActivityCheckInOut, SalesActivityController</title><path d="M320.0,332.0 L320.0,434.0" class="edge-hit"/><path d="M320.0,332.0 L320.0,434.0" class="edge-line" marker-end="url(#ah-user)"/></g>
+<g class="edge e-apex" data-edge="7" data-from="sr" data-to="oli"><title>7. Sample Request → Opportunity Product: Finish: buat / resync OLI — TA_AT_SR_AU_ProductOliCreation, TA_AT_SR_AU_FinishSRWithOLI, SampleRequestService</title><path d="M1064.0,142.0 L918.0,434.0" class="edge-hit"/><path d="M1064.0,142.0 L918.0,434.0" class="edge-line" marker-end="url(#ah-apex)"/></g>
+<g class="edge e-apex" data-edge="8" data-from="sr" data-to="p2"><title>8. Sample Request → Product: Finish NPDR: resolve Product — TA_AT_SR_AU_ProductOliCreation, ProductService</title><path d="M1097.1,142.0 L1210.7,354.0" class="edge-hit"/><path d="M1097.1,142.0 L1210.7,354.0" class="edge-line" marker-end="url(#ah-apex)"/></g>
+<g class="edge e-user" data-edge="9" data-from="sr" data-to="so"><title>9. Sample Request → Sample Offer: ditawarkan + PDF — Create_SampleOfferOppty_Ctrl*, Sample_Offer_Generate_PDF_Ctrl*</title><path d="M1180.0,110.0 L1366.0,110.0" class="edge-hit"/><path d="M1180.0,110.0 L1366.0,110.0" class="edge-line" marker-end="url(#ah-user)"/></g>
+<g class="edge e-user" data-edge="10" data-from="so" data-to="sod"><title>10. Sample Offer → Sample Offer Detail: detail per SR — Create Sample Offer Detail (layar existing)</title><path d="M1470.0,142.0 L1470.0,264.0" class="edge-hit"/><path d="M1470.0,142.0 L1470.0,264.0" class="edge-line" marker-end="url(#ah-user)"/></g>
+<g class="edge e-apex" data-edge="11" data-from="sod" data-to="sr"><title>11. Sample Offer Detail → Sample Request: feedback &amp; remark — Trigger_SampleOffer_Detail_Status*, CopyCustomerFeedbackTrigger*, SOD_TRG_Stamp_Remark (juga ke OLI)</title><path d="M1404.3,268.0 L1153.9,146.0" class="edge-hit"/><path d="M1404.3,268.0 L1153.9,146.0" class="edge-line" marker-end="url(#ah-apex)"/></g>
+<g class="edge e-apex" data-edge="12" data-from="sod" data-to="ser"><title>12. Sample Offer Detail → Sample Evaluation Request: Improvement → SER — TA_AT_SOD_AU_CreateSER, SampleEvaluationRequestService</title><path d="M1470.0,332.0 L1470.0,434.0" class="edge-hit"/><path d="M1470.0,332.0 L1470.0,434.0" class="edge-line" marker-end="url(#ah-apex)"/></g>
+<g class="edge e-apex" data-edge="13" data-from="ser" data-to="p2"><title>13. Sample Evaluation Request → Product: Finish: resolve Product — TA_AT_SER_AU_CreateProduct, SampleEvaluationRequestService</title><path d="M1374.0,438.0 L1334.0,424.7" class="edge-hit"/><path d="M1374.0,438.0 L1334.0,424.7" class="edge-line" marker-end="url(#ah-apex)"/></g>
+<g class="edge e-user" data-edge="14" data-from="ser" data-to="sr"><title>14. Sample Evaluation Request → Sample Request: Sync hasil evaluasi — SER_SCR_SyncToSampleRequest</title><path d="M1435.3,438.0 L1119.0,146.0" class="edge-hit"/><path d="M1435.3,438.0 L1119.0,146.0" class="edge-line" marker-end="url(#ah-user)"/></g>
+<g class="edge e-user" data-edge="15" data-from="oli" data-to="quote"><title>15. Opportunity Product → Quote: Quote Line dari OLI — QuoteProductEntry_fromOpty_controller*</title><path d="M862.4,438.0 L742.4,336.0" class="edge-hit"/><path d="M862.4,438.0 L742.4,336.0" class="edge-line" marker-end="url(#ah-user)"/></g>
+<g class="edge e-flow" data-edge="16" data-from="quote" data-to="opp"><title>16. Quote → Opportunity: update → Closed Won (KI-01) — Quote_TRG_Update_Oppty_to_Close_Won</title><path d="M700.0,268.0 L700.0,146.0" class="edge-hit"/><path d="M700.0,268.0 L700.0,146.0" class="edge-line" marker-end="url(#ah-flow)"/></g>
+<g class="edge e-flow" data-edge="17" data-from="acc" data-to="ord"><title>17. Account → Order: Parent Account — Order_TRG_MappingParentAccountWithForecast</title><path d="M354.7,332.0 L660.9,614.0" class="edge-hit"/><path d="M354.7,332.0 L660.9,614.0" class="edge-line" marker-end="url(#ah-flow)"/></g>
+<g class="edge e-flow" data-edge="18" data-from="fc" data-to="ord"><title>18. Forecast Sales → Order: Forecast_Order__c — Order_TRG_MappingParentAccountWithForecast</title><path d="M420.0,650.0 L596.0,650.0" class="edge-hit"/><path d="M420.0,650.0 L596.0,650.0" class="edge-line" marker-end="url(#ah-flow)"/></g>
+<g class="edge e-flow" data-edge="19" data-from="ord" data-to="orli"><title>19. Order → Order Line Item: Account__c dari parent — Order_Line_Item_TRG_Mapping_Account</title><path d="M800.0,650.0 L976.0,650.0" class="edge-hit"/><path d="M800.0,650.0 L976.0,650.0" class="edge-line" marker-end="url(#ah-flow)"/></g>
+<g class="edge e-flow" data-edge="20" data-from="fc" data-to="orli"><title>20. Forecast Sales → Order Line Item: Forecast AOP &amp; MFC — OrderLineItem_TRG_Mapping_Forecast</title><path d="M420.0,680.3 Q700,765 976.0,681.5" class="edge-hit"/><path d="M420.0,680.3 Q700,765 976.0,681.5" class="edge-line" marker-end="url(#ah-flow)"/></g>
+<g class="edge e-flow" data-edge="21" data-from="oli" data-to="orli"><title>21. Opportunity Product → Order Line Item: Opportunity_Product__c — Order_Line_Item_TRG_Update_Opportunity_Product</title><path d="M932.0,502.0 L1044.0,614.0" class="edge-hit"/><path d="M932.0,502.0 L1044.0,614.0" class="edge-line" marker-end="url(#ah-flow)"/></g>
+<g class="edge e-flow" data-edge="22" data-from="acc" data-to="fc"><title>22. Account → Forecast Sales: Account__c → parent — Forecast_TRG_Mapping_Account_to_Parent_Account</title><path d="M277.9,332.0 Q90,475 272.7,614.0" class="edge-hit"/><path d="M277.9,332.0 Q90,475 272.7,614.0" class="edge-line" marker-end="url(#ah-flow)"/></g>
+<g class="edge e-ext" data-edge="23" data-from="sap" data-to="ord"><title>23. SAP via Data Loader → Order: upsert header — Data Loader CLI, key SAP_SO_Number__c</title><path d="M852.0,778.0 L742.8,686.0" class="edge-hit"/><path d="M852.0,778.0 L742.8,686.0" class="edge-line" marker-end="url(#ah-ext)"/></g>
+<g class="edge e-ext" data-edge="24" data-from="sap" data-to="orli"><title>24. SAP via Data Loader → Order Line Item: upsert detail — Data Loader CLI, key SAP_Line_Key__c</title><path d="M928.0,778.0 L1037.2,686.0" class="edge-hit"/><path d="M928.0,778.0 L1037.2,686.0" class="edge-line" marker-end="url(#ah-ext)"/></g>
+<g class="node" data-node="lead" tabindex="0" role="button" aria-label="Lead"><rect x="222.0" y="80.0" width="196" height="60" rx="7" class="node-box"/><text x="320" y="103" text-anchor="middle" class="node-name">Lead</text><text x="320" y="119" text-anchor="middle" class="node-api">Lead</text><text x="320" y="133" text-anchor="middle" class="node-count">8 komponen</text></g>
+<g class="node" data-node="opp" tabindex="0" role="button" aria-label="Opportunity"><rect x="602.0" y="80.0" width="196" height="60" rx="7" class="node-box"/><text x="700" y="103" text-anchor="middle" class="node-name">Opportunity</text><text x="700" y="119" text-anchor="middle" class="node-api">Opportunity</text><text x="700" y="133" text-anchor="middle" class="node-count">12 komponen</text></g>
+<g class="node" data-node="sr" tabindex="0" role="button" aria-label="Sample Request"><rect x="982.0" y="80.0" width="196" height="60" rx="7" class="node-box"/><text x="1080" y="103" text-anchor="middle" class="node-name">Sample Request</text><text x="1080" y="119" text-anchor="middle" class="node-api">Sample_Request__c</text><text x="1080" y="133" text-anchor="middle" class="node-count">17 komponen</text></g>
+<g class="node" data-node="so" tabindex="0" role="button" aria-label="Sample Offer"><rect x="1372.0" y="80.0" width="196" height="60" rx="7" class="node-box"/><text x="1470" y="103" text-anchor="middle" class="node-name">Sample Offer</text><text x="1470" y="119" text-anchor="middle" class="node-api">Sample_Offer__c</text><text x="1470" y="133" text-anchor="middle" class="node-count">2 komponen</text></g>
+<g class="node" data-node="acc" tabindex="0" role="button" aria-label="Account"><rect x="222.0" y="270.0" width="196" height="60" rx="7" class="node-box"/><text x="320" y="293" text-anchor="middle" class="node-name">Account</text><text x="320" y="309" text-anchor="middle" class="node-api">Account</text><text x="320" y="323" text-anchor="middle" class="node-count">6 komponen</text></g>
+<g class="node" data-node="quote" tabindex="0" role="button" aria-label="Quote"><rect x="602.0" y="270.0" width="196" height="60" rx="7" class="node-box"/><text x="700" y="293" text-anchor="middle" class="node-name">Quote</text><text x="700" y="309" text-anchor="middle" class="node-api">Quote</text><text x="700" y="323" text-anchor="middle" class="node-count">3 komponen</text></g>
+<g class="node" data-node="sod" tabindex="0" role="button" aria-label="Sample Offer Detail"><rect x="1372.0" y="270.0" width="196" height="60" rx="7" class="node-box"/><text x="1470" y="293" text-anchor="middle" class="node-name">Sample Offer Detail</text><text x="1470" y="309" text-anchor="middle" class="node-api">Sample_Offer_Detail__c</text><text x="1470" y="323" text-anchor="middle" class="node-count">5 komponen</text></g>
+<g class="node" data-node="sa" tabindex="0" role="button" aria-label="Sales Activity"><rect x="222.0" y="440.0" width="196" height="60" rx="7" class="node-box"/><text x="320" y="463" text-anchor="middle" class="node-name">Sales Activity</text><text x="320" y="479" text-anchor="middle" class="node-api">Sales_Activity__c</text><text x="320" y="493" text-anchor="middle" class="node-count">tanpa automasi</text></g>
+<g class="node" data-node="oli" tabindex="0" role="button" aria-label="Opportunity Product"><rect x="802.0" y="440.0" width="196" height="60" rx="7" class="node-box"/><text x="900" y="463" text-anchor="middle" class="node-name">Opportunity Product</text><text x="900" y="479" text-anchor="middle" class="node-api">OpportunityLineItem</text><text x="900" y="493" text-anchor="middle" class="node-count">tanpa automasi</text></g>
+<g class="node" data-node="p2" tabindex="0" role="button" aria-label="Product"><rect x="1132.0" y="360.0" width="196" height="60" rx="7" class="node-box"/><text x="1230" y="383" text-anchor="middle" class="node-name">Product</text><text x="1230" y="399" text-anchor="middle" class="node-api">Product2</text><text x="1230" y="413" text-anchor="middle" class="node-count">5 komponen</text></g>
+<g class="node" data-node="ser" tabindex="0" role="button" aria-label="Sample Evaluation Request"><rect x="1372.0" y="440.0" width="196" height="60" rx="7" class="node-box"/><text x="1470" y="463" text-anchor="middle" class="node-name">Sample Evaluation Request</text><text x="1470" y="479" text-anchor="middle" class="node-api">Sample_Evaluation_Request__c</text><text x="1470" y="493" text-anchor="middle" class="node-count">10 komponen</text></g>
+<g class="node" data-node="fc" tabindex="0" role="button" aria-label="Forecast Sales"><rect x="222.0" y="620.0" width="196" height="60" rx="7" class="node-box"/><text x="320" y="643" text-anchor="middle" class="node-name">Forecast Sales</text><text x="320" y="659" text-anchor="middle" class="node-api">Forecast_Sales__c</text><text x="320" y="673" text-anchor="middle" class="node-count">7 komponen</text></g>
+<g class="node" data-node="ord" tabindex="0" role="button" aria-label="Order"><rect x="602.0" y="620.0" width="196" height="60" rx="7" class="node-box"/><text x="700" y="643" text-anchor="middle" class="node-name">Order</text><text x="700" y="659" text-anchor="middle" class="node-api">Order</text><text x="700" y="673" text-anchor="middle" class="node-count">2 komponen</text></g>
+<g class="node" data-node="orli" tabindex="0" role="button" aria-label="Order Line Item"><rect x="982.0" y="620.0" width="196" height="60" rx="7" class="node-box"/><text x="1080" y="643" text-anchor="middle" class="node-name">Order Line Item</text><text x="1080" y="659" text-anchor="middle" class="node-api">Order_Line_Item__c</text><text x="1080" y="673" text-anchor="middle" class="node-count">4 komponen</text></g>
+<g class="node node-ext" data-node="sap" tabindex="0" role="button" aria-label="SAP via Data Loader"><rect x="792.0" y="780.0" width="196" height="60" rx="7" class="node-box"/><text x="890" y="803" text-anchor="middle" class="node-name">SAP via Data Loader</text><text x="890" y="819" text-anchor="middle" class="node-api">file CSV di server Foodex</text><text x="890" y="833" text-anchor="middle" class="node-count">eksternal</text></g>
+<g class="elabel l-apex" data-edge="1" data-from="lead" data-to="opp"><text x="436.6" y="101.0" text-anchor="start" class="elabel-text">convert: SR terpilih pindah</text><circle cx="423.6" cy="97.0" r="9" class="badge"/><text x="423.6" y="100.6" text-anchor="middle" class="badge-no">1</text></g>
+<g class="elabel l-user" data-edge="2" data-from="lead" data-to="sr"><text x="662.5" y="18.0" text-anchor="start" class="elabel-text">buat &amp; pilih SR</text><circle cx="649.5" cy="14.0" r="9" class="badge"/><text x="649.5" y="17.6" text-anchor="middle" class="badge-no">2</text></g>
+<g class="elabel l-user" data-edge="3" data-from="opp" data-to="sr"><text x="828.9" y="101.0" text-anchor="start" class="elabel-text">buat SR / clone SR Drop</text><circle cx="815.9" cy="97.0" r="9" class="badge"/><text x="815.9" y="100.6" text-anchor="middle" class="badge-no">3</text></g>
+<g class="elabel l-flow" data-edge="4" data-from="sr" data-to="opp"><text x="829.6" y="195.5" text-anchor="start" class="elabel-text">semua Drop → Closed Lost</text><circle cx="816.6" cy="191.5" r="9" class="badge"/><text x="816.6" y="195.1" text-anchor="middle" class="badge-no">4</text></g>
+<g class="elabel l-flow" data-edge="5" data-from="acc" data-to="opp"><text x="493.0" y="211.0" text-anchor="end" class="elabel-text">End Customer, Project Name</text><circle cx="506.0" cy="207.0" r="9" class="badge"/><text x="506.0" y="210.6" text-anchor="middle" class="badge-no">5</text></g>
+<g class="elabel l-user" data-edge="6" data-from="acc" data-to="sa"><text x="333.0" y="387.0" text-anchor="start" class="elabel-text">Check In / Out</text><circle cx="320.0" cy="383.0" r="9" class="badge"/><text x="320.0" y="386.6" text-anchor="middle" class="badge-no">6</text></g>
+<g class="elabel l-apex" data-edge="7" data-from="sr" data-to="oli"><text x="978.0" y="292.0" text-anchor="end" class="elabel-text">Finish: buat / resync OLI</text><circle cx="991.0" cy="288.0" r="9" class="badge"/><text x="991.0" y="291.6" text-anchor="middle" class="badge-no">7</text></g>
+<g class="elabel l-apex" data-edge="8" data-from="sr" data-to="p2"><text x="1180.9" y="325.0" text-anchor="end" class="elabel-text">Finish NPDR: resolve Product</text><circle cx="1193.9" cy="321.0" r="9" class="badge"/><text x="1193.9" y="324.6" text-anchor="middle" class="badge-no">8</text></g>
+<g class="elabel l-user" data-edge="9" data-from="sr" data-to="so"><text x="1235.2" y="101.0" text-anchor="start" class="elabel-text">ditawarkan + PDF</text><circle cx="1222.2" cy="97.0" r="9" class="badge"/><text x="1222.2" y="100.6" text-anchor="middle" class="badge-no">9</text></g>
+<g class="elabel l-user" data-edge="10" data-from="so" data-to="sod"><text x="1483.0" y="207.0" text-anchor="start" class="elabel-text">detail per SR</text><circle cx="1470.0" cy="203.0" r="9" class="badge"/><text x="1470.0" y="206.6" text-anchor="middle" class="badge-no">10</text></g>
+<g class="elabel l-apex" data-edge="11" data-from="sod" data-to="sr"><text x="1292.1" y="203.0" text-anchor="start" class="elabel-text">feedback &amp; remark</text><circle cx="1279.1" cy="199.0" r="9" class="badge"/><text x="1279.1" y="202.6" text-anchor="middle" class="badge-no">11</text></g>
+<g class="elabel l-apex" data-edge="12" data-from="sod" data-to="ser"><text x="1483.0" y="387.0" text-anchor="start" class="elabel-text">Improvement → SER</text><circle cx="1470.0" cy="383.0" r="9" class="badge"/><text x="1470.0" y="386.6" text-anchor="middle" class="badge-no">12</text></g>
+<g class="elabel l-apex" data-edge="13" data-from="ser" data-to="p2"><text x="1341.0" y="449.3" text-anchor="end" class="elabel-text">Finish: resolve Product</text><circle cx="1354.0" cy="445.3" r="9" class="badge"/><text x="1354.0" y="448.9" text-anchor="middle" class="badge-no">13</text></g>
+<g class="elabel l-user" data-edge="14" data-from="ser" data-to="sr"><text x="1346.2" y="348.0" text-anchor="start" class="elabel-text">Sync hasil evaluasi</text><circle cx="1333.2" cy="344.0" r="9" class="badge"/><text x="1333.2" y="347.6" text-anchor="middle" class="badge-no">14</text></g>
+<g class="elabel l-user" data-edge="15" data-from="oli" data-to="quote"><text x="815.4" y="391.0" text-anchor="start" class="elabel-text">Quote Line dari OLI</text><circle cx="802.4" cy="387.0" r="9" class="badge"/><text x="802.4" y="390.6" text-anchor="middle" class="badge-no">15</text></g>
+<g class="elabel l-flow" data-edge="16" data-from="quote" data-to="opp"><text x="713.0" y="211.0" text-anchor="start" class="elabel-text">update → Closed Won (KI-01)</text><circle cx="700.0" cy="207.0" r="9" class="badge"/><text x="700.0" y="210.6" text-anchor="middle" class="badge-no">16</text></g>
+<g class="elabel l-flow" data-edge="17" data-from="acc" data-to="ord"><text x="520.8" y="477.0" text-anchor="start" class="elabel-text">Parent Account</text><circle cx="507.8" cy="473.0" r="9" class="badge"/><text x="507.8" y="476.6" text-anchor="middle" class="badge-no">17</text></g>
+<g class="elabel l-flow" data-edge="18" data-from="fc" data-to="ord"><text x="467.1" y="641.0" text-anchor="start" class="elabel-text">Forecast_Order__c</text><circle cx="454.1" cy="637.0" r="9" class="badge"/><text x="454.1" y="640.6" text-anchor="middle" class="badge-no">18</text></g>
+<g class="elabel l-flow" data-edge="19" data-from="ord" data-to="orli"><text x="831.9" y="641.0" text-anchor="start" class="elabel-text">Account__c dari parent</text><circle cx="818.9" cy="637.0" r="9" class="badge"/><text x="818.9" y="640.6" text-anchor="middle" class="badge-no">19</text></g>
+<g class="elabel l-flow" data-edge="20" data-from="fc" data-to="orli"><text x="655.1" y="716.9" text-anchor="start" class="elabel-text">Forecast AOP &amp; MFC</text><circle cx="642.1" cy="712.9" r="9" class="badge"/><text x="642.1" y="716.5" text-anchor="middle" class="badge-no">20</text></g>
+<g class="elabel l-flow" data-edge="21" data-from="oli" data-to="orli"><text x="1001.0" y="562.0" text-anchor="start" class="elabel-text">Opportunity_Product__c</text><circle cx="988.0" cy="558.0" r="9" class="badge"/><text x="988.0" y="561.6" text-anchor="middle" class="badge-no">21</text></g>
+<g class="elabel l-flow" data-edge="22" data-from="acc" data-to="fc"><text x="169.7" y="478.0" text-anchor="end" class="elabel-text">Account__c → parent</text><circle cx="182.7" cy="474.0" r="9" class="badge"/><text x="182.7" y="477.6" text-anchor="middle" class="badge-no">22</text></g>
+<g class="elabel l-ext" data-edge="23" data-from="sap" data-to="ord"><text x="784.4" y="754.0" text-anchor="end" class="elabel-text">upsert header</text><circle cx="797.4" cy="750.0" r="9" class="badge"/><text x="797.4" y="753.6" text-anchor="middle" class="badge-no">23</text></g>
+<g class="elabel l-ext" data-edge="24" data-from="sap" data-to="orli"><text x="995.6" y="736.0" text-anchor="start" class="elabel-text">upsert detail</text><circle cx="982.6" cy="732.0" r="9" class="badge"/><text x="982.6" y="735.6" text-anchor="middle" class="badge-no">24</text></g>
+</svg>
+    </div>
+    <figcaption>Sample Request adalah pusat alur: dibuat dari Lead atau Opportunity, menghasilkan Product dan Opportunity Product saat Finish, dan menerima balik feedback dari Sample Offer Detail serta hasil evaluasi dari SER. Order dan Order Line Item dari SAP dipetakan ke Account induk dan Forecast oleh flow before/after save. Relasi 16 bertanda merah karena flow-nya belum memfilter Status = Accepted (KI-01).</figcaption>
+  </figure>
+
+  <div class="focusbar" id="focusbar" aria-live="polite">
+    <span id="focustext">Menampilkan semua object dan 24 relasi.</span>
+    <button class="reset" id="reset" type="button" hidden>Tampilkan semua</button>
+  </div>
+
+  <section aria-labelledby="h-rel">
+    <div class="sechead"><h2 id="h-rel">Relasi antar object</h2><p>Nomor sama dengan badge pada peta.</p></div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>No</th><th>Mekanisme</th><th>Dari → Ke</th><th>Yang terjadi</th><th>Komponen</th></tr></thead>
+        <tbody id="reltable">
+<tr data-edge="1" data-from="lead" data-to="opp"><td class="num">1</td><td><span class="pill p-apex">Apex</span></td><td>Lead <span class="arr">→</span> Opportunity</td><td>convert: SR terpilih pindah</td><td class="comps"><code>TA_AT_Lead_AU_LeadConversion</code><code>LeadConversionService</code></td></tr>
+<tr data-edge="2" data-from="lead" data-to="sr"><td class="num">2</td><td><span class="pill p-user">Aksi user</span></td><td>Lead <span class="arr">→</span> Sample Request</td><td>buat &amp; pilih SR</td><td class="comps"><code>Lead_SCR_Create_Sample_Request</code><code>Lead_SCR_Selected_Sample_Request</code></td></tr>
+<tr data-edge="3" data-from="opp" data-to="sr"><td class="num">3</td><td><span class="pill p-user">Aksi user</span></td><td>Opportunity <span class="arr">→</span> Sample Request</td><td>buat SR / clone SR Drop</td><td class="comps"><code>Opportunity_SCR_Create_Sample_Request</code><code>lwc_OpptyCreateFromDroppedSR</code><code>OpptyCreateFromDroppedSRController</code></td></tr>
+<tr data-edge="4" data-from="sr" data-to="opp"><td class="num">4</td><td><span class="pill p-flow">Record-triggered flow</span></td><td>Sample Request <span class="arr">→</span> Opportunity</td><td>semua Drop → Closed Lost</td><td class="comps"><code>SR_TRG_Auto_Close_Lost_Oppty_When_All_Drop</code><code>SR_TRG_Migration_Auto_Finish_and_Auto_Closed_Won_Opportunity (data migrasi)</code></td></tr>
+<tr data-edge="5" data-from="acc" data-to="opp"><td class="num">5</td><td><span class="pill p-flow">Record-triggered flow</span></td><td>Account <span class="arr">→</span> Opportunity</td><td>End Customer, Project Name</td><td class="comps"><code>Oppty_TRG_Update_End_Customer</code><code>Oppty_TRG_Filled_in_Project_Name</code></td></tr>
+<tr data-edge="6" data-from="acc" data-to="sa"><td class="num">6</td><td><span class="pill p-user">Aksi user</span></td><td>Account <span class="arr">→</span> Sales Activity</td><td>Check In / Out</td><td class="comps"><code>aura_SalesActivityCheckInOut</code><code>lwc_SalesActivityCheckInOut</code><code>SalesActivityController</code></td></tr>
+<tr data-edge="7" data-from="sr" data-to="oli"><td class="num">7</td><td><span class="pill p-apex">Apex</span></td><td>Sample Request <span class="arr">→</span> Opportunity Product</td><td>Finish: buat / resync OLI</td><td class="comps"><code>TA_AT_SR_AU_ProductOliCreation</code><code>TA_AT_SR_AU_FinishSRWithOLI</code><code>SampleRequestService</code></td></tr>
+<tr data-edge="8" data-from="sr" data-to="p2"><td class="num">8</td><td><span class="pill p-apex">Apex</span></td><td>Sample Request <span class="arr">→</span> Product</td><td>Finish NPDR: resolve Product</td><td class="comps"><code>TA_AT_SR_AU_ProductOliCreation</code><code>ProductService</code></td></tr>
+<tr data-edge="9" data-from="sr" data-to="so"><td class="num">9</td><td><span class="pill p-user">Aksi user</span></td><td>Sample Request <span class="arr">→</span> Sample Offer</td><td>ditawarkan + PDF</td><td class="comps"><code>Create_SampleOfferOppty_Ctrl*</code><code>Sample_Offer_Generate_PDF_Ctrl*</code></td></tr>
+<tr data-edge="10" data-from="so" data-to="sod"><td class="num">10</td><td><span class="pill p-user">Aksi user</span></td><td>Sample Offer <span class="arr">→</span> Sample Offer Detail</td><td>detail per SR</td><td class="comps"><code>Create Sample Offer Detail (layar existing)</code></td></tr>
+<tr data-edge="11" data-from="sod" data-to="sr"><td class="num">11</td><td><span class="pill p-apex">Apex</span></td><td>Sample Offer Detail <span class="arr">→</span> Sample Request</td><td>feedback &amp; remark</td><td class="comps"><code>Trigger_SampleOffer_Detail_Status*</code><code>CopyCustomerFeedbackTrigger*</code><code>SOD_TRG_Stamp_Remark (juga ke OLI)</code></td></tr>
+<tr data-edge="12" data-from="sod" data-to="ser"><td class="num">12</td><td><span class="pill p-apex">Apex</span></td><td>Sample Offer Detail <span class="arr">→</span> Sample Evaluation Request</td><td>Improvement → SER</td><td class="comps"><code>TA_AT_SOD_AU_CreateSER</code><code>SampleEvaluationRequestService</code></td></tr>
+<tr data-edge="13" data-from="ser" data-to="p2"><td class="num">13</td><td><span class="pill p-apex">Apex</span></td><td>Sample Evaluation Request <span class="arr">→</span> Product</td><td>Finish: resolve Product</td><td class="comps"><code>TA_AT_SER_AU_CreateProduct</code><code>SampleEvaluationRequestService</code></td></tr>
+<tr data-edge="14" data-from="ser" data-to="sr"><td class="num">14</td><td><span class="pill p-user">Aksi user</span></td><td>Sample Evaluation Request <span class="arr">→</span> Sample Request</td><td>Sync hasil evaluasi</td><td class="comps"><code>SER_SCR_SyncToSampleRequest</code></td></tr>
+<tr data-edge="15" data-from="oli" data-to="quote"><td class="num">15</td><td><span class="pill p-user">Aksi user</span></td><td>Opportunity Product <span class="arr">→</span> Quote</td><td>Quote Line dari OLI</td><td class="comps"><code>QuoteProductEntry_fromOpty_controller*</code></td></tr>
+<tr data-edge="16" data-from="quote" data-to="opp"><td class="num">16</td><td><span class="pill p-flow">Record-triggered flow</span></td><td>Quote <span class="arr">→</span> Opportunity</td><td>update → Closed Won (KI-01)</td><td class="comps"><code>Quote_TRG_Update_Oppty_to_Close_Won</code></td></tr>
+<tr data-edge="17" data-from="acc" data-to="ord"><td class="num">17</td><td><span class="pill p-flow">Record-triggered flow</span></td><td>Account <span class="arr">→</span> Order</td><td>Parent Account</td><td class="comps"><code>Order_TRG_MappingParentAccountWithForecast</code></td></tr>
+<tr data-edge="18" data-from="fc" data-to="ord"><td class="num">18</td><td><span class="pill p-flow">Record-triggered flow</span></td><td>Forecast Sales <span class="arr">→</span> Order</td><td>Forecast_Order__c</td><td class="comps"><code>Order_TRG_MappingParentAccountWithForecast</code></td></tr>
+<tr data-edge="19" data-from="ord" data-to="orli"><td class="num">19</td><td><span class="pill p-flow">Record-triggered flow</span></td><td>Order <span class="arr">→</span> Order Line Item</td><td>Account__c dari parent</td><td class="comps"><code>Order_Line_Item_TRG_Mapping_Account</code></td></tr>
+<tr data-edge="20" data-from="fc" data-to="orli"><td class="num">20</td><td><span class="pill p-flow">Record-triggered flow</span></td><td>Forecast Sales <span class="arr">→</span> Order Line Item</td><td>Forecast AOP &amp; MFC</td><td class="comps"><code>OrderLineItem_TRG_Mapping_Forecast</code></td></tr>
+<tr data-edge="21" data-from="oli" data-to="orli"><td class="num">21</td><td><span class="pill p-flow">Record-triggered flow</span></td><td>Opportunity Product <span class="arr">→</span> Order Line Item</td><td>Opportunity_Product__c</td><td class="comps"><code>Order_Line_Item_TRG_Update_Opportunity_Product</code></td></tr>
+<tr data-edge="22" data-from="acc" data-to="fc"><td class="num">22</td><td><span class="pill p-flow">Record-triggered flow</span></td><td>Account <span class="arr">→</span> Forecast Sales</td><td>Account__c → parent</td><td class="comps"><code>Forecast_TRG_Mapping_Account_to_Parent_Account</code></td></tr>
+<tr data-edge="23" data-from="sap" data-to="ord"><td class="num">23</td><td><span class="pill p-ext">Integrasi eksternal</span></td><td>SAP via Data Loader <span class="arr">→</span> Order</td><td>upsert header</td><td class="comps"><code>Data Loader CLI</code><code>key SAP_SO_Number__c</code></td></tr>
+<tr data-edge="24" data-from="sap" data-to="orli"><td class="num">24</td><td><span class="pill p-ext">Integrasi eksternal</span></td><td>SAP via Data Loader <span class="arr">→</span> Order Line Item</td><td>upsert detail</td><td class="comps"><code>Data Loader CLI</code><code>key SAP_Line_Key__c</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-obj">
+    <div class="sechead"><h2 id="h-obj">Komponen per object</h2><p>Warna label tipe: hijau flow, biru Apex, oranye UI, ungu approval.</p></div>
+    <div class="cards" id="cards">
+<article class="card" data-node="lead" id="obj-lead"><header><h3>Lead</h3><span class="capi">Lead</span></header><ul class="clist"><li><span class="tchip t-flow">Flow · before save</span><code>Lead_TRG_BantRatingScore</code></li><li><span class="tchip t-flow">Screen Flow</span><code>Lead_SCR_Create_Sample_Request</code></li><li><span class="tchip t-flow">Screen Flow</span><code>Lead_SCR_Selected_Sample_Request</code></li><li><span class="tchip t-apex">Trigger</span><code>LeadTrigger</code></li><li><span class="tchip t-apex">Trigger Action</span><code>TA_AT_Lead_AU_LeadConversion</code></li><li><span class="tchip t-apex">Service</span><code>LeadConversionService</code></li><li><span class="tchip t-ui">Quick Action</span><code>Lead.Create_Sample_Request</code></li><li><span class="tchip t-ui">Quick Action</span><code>Lead.Select_Sample_Request</code></li></ul><footer><span class="rlabel">Relasi</span><button class="relchip" data-edge="1" type="button">1</button> <button class="relchip" data-edge="2" type="button">2</button></footer></article>
+<article class="card" data-node="acc" id="obj-acc"><header><h3>Account</h3><span class="capi">Account</span></header><ul class="clist"><li><span class="tchip t-flow">Flow · before save</span><code>Account_TRG_Update_Is_Key_Account</code></li><li><span class="tchip t-ui">Quick Action</span><code>Account.Check_In_Out</code></li><li><span class="tchip t-ui">Aura</span><code>aura_SalesActivityCheckInOut</code></li><li><span class="tchip t-ui">LWC</span><code>lwc_SalesActivityCheckInOut</code></li><li><span class="tchip t-apex">Controller</span><code>SalesActivityController</code></li><li><span class="tchip t-ui">LWC</span><code>lwc_AccountCsvTemplate</code></li></ul><footer><span class="rlabel">Relasi</span><button class="relchip" data-edge="5" type="button">5</button> <button class="relchip" data-edge="6" type="button">6</button> <button class="relchip" data-edge="17" type="button">17</button> <button class="relchip" data-edge="22" type="button">22</button></footer></article>
+<article class="card" data-node="opp" id="obj-opp"><header><h3>Opportunity</h3><span class="capi">Opportunity</span></header><ul class="clist"><li><span class="tchip t-flow">Flow · before save</span><code>Oppty_TRG_Filled_in_Project_Name</code></li><li><span class="tchip t-flow">Flow · after save</span><code>Oppty_TRG_Update_End_Customer</code></li><li><span class="tchip t-flow">Screen Flow</span><code>Opportunity_SCR_Create_Sample_Request</code></li><li><span class="tchip t-ui">LWC</span><code>lwc_OpptyCreateFromDroppedSR</code></li><li><span class="tchip t-apex">Controller</span><code>OpptyCreateFromDroppedSRController</code></li><li><span class="tchip t-ui">LWC</span><code>lwc_OpptyCsvTemplate</code></li><li><span class="tchip t-ui">LWC</span><code>lwc_OpptyClosedWonCsvTemplate</code></li><li><span class="tchip t-ui">LWC</span><code>lwc_OpportunityCsvImport</code></li><li><span class="tchip t-ui">Quick Action</span><code>Opportunity.Create_Sample_Request</code></li><li><span class="tchip t-ui">Quick Action</span><code>Opportunity.Create_Sample_Request_Opportunity</code></li><li><span class="tchip t-ui">Quick Action</span><code>Opportunity.Create_Oppty_From_Dropped_SR</code></li><li><span class="tchip t-apex">Controller</span><code>Opportunity_Sample_Request_controller</code><span class=adj title="Komponen lama yang disesuaikan">disesuaikan</span></li></ul><footer><span class="rlabel">Relasi</span><button class="relchip" data-edge="1" type="button">1</button> <button class="relchip" data-edge="3" type="button">3</button> <button class="relchip" data-edge="4" type="button">4</button> <button class="relchip" data-edge="5" type="button">5</button> <button class="relchip" data-edge="16" type="button">16</button></footer></article>
+<article class="card" data-node="sr" id="obj-sr"><header><h3>Sample Request</h3><span class="capi">Sample_Request__c</span></header><ul class="clist"><li><span class="tchip t-apex">Trigger</span><code>SampleRequestTrigger</code></li><li><span class="tchip t-apex">Trigger Action</span><code>TA_AT_SR_AU_ProductOliCreation</code></li><li><span class="tchip t-apex">Trigger Action</span><code>TA_AT_SR_AU_FinishSRWithOLI</code></li><li><span class="tchip t-apex">Service</span><code>SampleRequestService</code></li><li><span class="tchip t-apex">Service</span><code>ProductService</code></li><li><span class="tchip t-apex">Trigger</span><code>Trigger_Sample_Request</code><span class=adj title="Komponen lama yang disesuaikan">disesuaikan</span></li><li><span class="tchip t-apex">Trigger</span><code>SampleRequest_cekEstimateNotNull</code><span class=adj title="Komponen lama yang disesuaikan">disesuaikan</span></li><li><span class="tchip t-flow">Flow · after save</span><code>SR_TRG_Auto_Close_Lost_Oppty_When_All_Drop</code></li><li><span class="tchip t-flow">Flow · after save</span><code>SR_TRG_Migration_Auto_Finish_and_Auto_Closed_Won_Opportunity</code></li><li><span class="tchip t-flow">Screen Flow</span><code>SR_SCR_Create_General_Request</code></li><li><span class="tchip t-flow">Screen Flow</span><code>SR_SCR_UpdateStatusFinish</code></li><li><span class="tchip t-flow">Scheduled Flow</span><code>Sample_Request_Auto_Closed_After_Period_of_Time_Without_Update</code><span class=adj title="Komponen lama yang disesuaikan">disesuaikan</span></li><li><span class="tchip t-appr">Approval</span><code>SR_Manufacturing_Approval</code></li><li><span class="tchip t-appr">Approval</span><code>SR_Trading_Approval</code></li><li><span class="tchip t-ui">LWC</span><code>lwc_SampleRequestCsvTemplate</code></li><li><span class="tchip t-ui">LWC</span><code>lwc_SampleRequestCsvImport</code></li><li><span class="tchip t-ui">Quick Action</span><code>Sample_Request__c.Sample_Request_Finish</code></li></ul><footer><span class="rlabel">Relasi</span><button class="relchip" data-edge="2" type="button">2</button> <button class="relchip" data-edge="3" type="button">3</button> <button class="relchip" data-edge="4" type="button">4</button> <button class="relchip" data-edge="7" type="button">7</button> <button class="relchip" data-edge="8" type="button">8</button> <button class="relchip" data-edge="9" type="button">9</button> <button class="relchip" data-edge="11" type="button">11</button> <button class="relchip" data-edge="14" type="button">14</button></footer></article>
+<article class="card" data-node="so" id="obj-so"><header><h3>Sample Offer</h3><span class="capi">Sample_Offer__c</span></header><ul class="clist"><li><span class="tchip t-apex">Controller + VF</span><code>Create_SampleOfferOppty_Ctrl</code><span class=adj title="Komponen lama yang disesuaikan">disesuaikan</span></li><li><span class="tchip t-apex">Controller + VF</span><code>Sample_Offer_Generate_PDF_Ctrl</code><span class=adj title="Komponen lama yang disesuaikan">disesuaikan</span></li></ul><footer><span class="rlabel">Relasi</span><button class="relchip" data-edge="9" type="button">9</button> <button class="relchip" data-edge="10" type="button">10</button></footer></article>
+<article class="card" data-node="sod" id="obj-sod"><header><h3>Sample Offer Detail</h3><span class="capi">Sample_Offer_Detail__c</span></header><ul class="clist"><li><span class="tchip t-apex">Trigger</span><code>SampleOfferDetailTrigger</code></li><li><span class="tchip t-apex">Trigger Action</span><code>TA_AT_SOD_AU_CreateSER</code></li><li><span class="tchip t-flow">Flow · after save</span><code>SOD_TRG_Stamp_Remark</code></li><li><span class="tchip t-apex">Trigger</span><code>Trigger_SampleOffer_Detail_Status</code><span class=adj title="Komponen lama yang disesuaikan">disesuaikan</span></li><li><span class="tchip t-apex">Trigger</span><code>CopyCustomerFeedbackTrigger</code><span class=adj title="Komponen lama yang disesuaikan">disesuaikan</span></li></ul><footer><span class="rlabel">Relasi</span><button class="relchip" data-edge="10" type="button">10</button> <button class="relchip" data-edge="11" type="button">11</button> <button class="relchip" data-edge="12" type="button">12</button></footer></article>
+<article class="card" data-node="ser" id="obj-ser"><header><h3>Sample Evaluation Request</h3><span class="capi">Sample_Evaluation_Request__c</span></header><ul class="clist"><li><span class="tchip t-apex">Trigger</span><code>SampleEvaluationRequestTrigger</code></li><li><span class="tchip t-apex">Trigger Action</span><code>TA_AT_SER_AU_CreateProduct</code></li><li><span class="tchip t-apex">Service</span><code>SampleEvaluationRequestService</code></li><li><span class="tchip t-flow">Flow · before save</span><code>SER_TRG_ApprovalValidation</code></li><li><span class="tchip t-flow">Screen Flow</span><code>SER_SCR_UpdateStatusFinish</code></li><li><span class="tchip t-flow">Screen Flow</span><code>SER_SCR_SyncToSampleRequest</code></li><li><span class="tchip t-appr">Approval</span><code>SER_Manufacturing_Approval</code></li><li><span class="tchip t-appr">Approval</span><code>SER_Trading_Approval</code></li><li><span class="tchip t-ui">Quick Action</span><code>Sample_Evaluation_Request_Finish</code></li><li><span class="tchip t-ui">Quick Action</span><code>Sync_to_Sample_Request</code></li></ul><footer><span class="rlabel">Relasi</span><button class="relchip" data-edge="12" type="button">12</button> <button class="relchip" data-edge="13" type="button">13</button> <button class="relchip" data-edge="14" type="button">14</button></footer></article>
+<article class="card" data-node="quote" id="obj-quote"><header><h3>Quote</h3><span class="capi">Quote</span></header><ul class="clist"><li><span class="tchip t-flow">Flow · after save</span><code>Quote_TRG_Update_Oppty_to_Close_Won</code></li><li><span class="tchip t-apex">Controller + VF</span><code>VF_Bon_Sample_controller</code><span class=adj title="Komponen lama yang disesuaikan">disesuaikan</span></li><li><span class="tchip t-apex">Controller</span><code>QuoteProductEntry_fromOpty_controller</code><span class=adj title="Komponen lama yang disesuaikan">disesuaikan</span></li></ul><footer><span class="rlabel">Relasi</span><button class="relchip" data-edge="15" type="button">15</button> <button class="relchip" data-edge="16" type="button">16</button></footer></article>
+<article class="card" data-node="p2" id="obj-p2"><header><h3>Product</h3><span class="capi">Product2</span></header><ul class="clist"><li><span class="tchip t-flow">Flow · before save</span><code>Product_TRG_Stamping_External_Id</code></li><li><span class="tchip t-flow">Flow · after save</span><code>Product_TRGVR_Check_Duplicate</code></li><li><span class="tchip t-apex">Trigger</span><code>Product_UpdatePrice</code><span class=adj title="Komponen lama yang disesuaikan">disesuaikan</span></li><li><span class="tchip t-ui">LWC</span><code>lwc_ProductCsvTemplate</code></li><li><span class="tchip t-ui">LWC</span><code>lwc_ProductCsvImport</code></li></ul><footer><span class="rlabel">Relasi</span><button class="relchip" data-edge="8" type="button">8</button> <button class="relchip" data-edge="13" type="button">13</button></footer></article>
+<article class="card" data-node="oli" id="obj-oli"><header><h3>Opportunity Product</h3><span class="capi">OpportunityLineItem</span></header><p class="cnote">Tidak punya automasi sendiri. OLI dibuat dan diubah dari Sample Request (relasi 7) dan dirujuk Order Line Item (relasi 21). Report LWC membaca object ini.</p><footer><span class="rlabel">Relasi</span><button class="relchip" data-edge="7" type="button">7</button> <button class="relchip" data-edge="15" type="button">15</button> <button class="relchip" data-edge="21" type="button">21</button></footer></article>
+<article class="card" data-node="ord" id="obj-ord"><header><h3>Order</h3><span class="capi">Order</span></header><ul class="clist"><li><span class="tchip t-flow">Flow · before save</span><code>Order_TRG_Auto_Fill_Effective_Date</code></li><li><span class="tchip t-flow">Flow · after save</span><code>Order_TRG_MappingParentAccountWithForecast</code></li></ul><footer><span class="rlabel">Relasi</span><button class="relchip" data-edge="17" type="button">17</button> <button class="relchip" data-edge="18" type="button">18</button> <button class="relchip" data-edge="19" type="button">19</button> <button class="relchip" data-edge="23" type="button">23</button></footer></article>
+<article class="card" data-node="orli" id="obj-orli"><header><h3>Order Line Item</h3><span class="capi">Order_Line_Item__c</span></header><ul class="clist"><li><span class="tchip t-flow">Flow · before save</span><code>OrderLineItem_TRG_Calulated_Value</code></li><li><span class="tchip t-flow">Flow · before save</span><code>OrderLineItem_TRG_Mapping_Forecast</code></li><li><span class="tchip t-flow">Flow · before save</span><code>Order_Line_Item_TRG_Mapping_Account</code></li><li><span class="tchip t-flow">Flow · before save</span><code>Order_Line_Item_TRG_Update_Opportunity_Product</code></li></ul><footer><span class="rlabel">Relasi</span><button class="relchip" data-edge="19" type="button">19</button> <button class="relchip" data-edge="20" type="button">20</button> <button class="relchip" data-edge="21" type="button">21</button> <button class="relchip" data-edge="24" type="button">24</button></footer></article>
+<article class="card" data-node="fc" id="obj-fc"><header><h3>Forecast Sales</h3><span class="capi">Forecast_Sales__c</span></header><ul class="clist"><li><span class="tchip t-flow">Flow · after save</span><code>Forecast_TRG_Mapping_Account_to_Parent_Account</code></li><li><span class="tchip t-ui">LWC</span><code>lwc_ForecastCsvTemplate</code></li><li><span class="tchip t-ui">LWC</span><code>lwc_ForecastCsvImport</code></li><li><span class="tchip t-ui">LWC report</span><code>lwc_aopPerformanceReport</code></li><li><span class="tchip t-ui">LWC report</span><code>lwc_ProductSalesPerformanceReport</code></li><li><span class="tchip t-apex">Controller</span><code>AOPPerformanceController</code></li><li><span class="tchip t-apex">Controller</span><code>ProductSalesPerformanceController</code></li></ul><p class="cnote">Report LWC membaca Forecast_Sales__c, OpportunityLineItem, dan Order_Line_Item__c.</p><footer><span class="rlabel">Relasi</span><button class="relchip" data-edge="18" type="button">18</button> <button class="relchip" data-edge="20" type="button">20</button> <button class="relchip" data-edge="22" type="button">22</button></footer></article>
+<article class="card" data-node="sa" id="obj-sa"><header><h3>Sales Activity</h3><span class="capi">Sales_Activity__c</span></header><p class="cnote">Record dibuat dari quick action Check in/ Out pada Account (relasi 6). Nama otomatis: [Type] - User - Hari - Tanggal - Jam.</p><footer><span class="rlabel">Relasi</span><button class="relchip" data-edge="6" type="button">6</button></footer></article>
+    </div>
+  </section>
+
+  <div class="foot">
+    <p>Tidak dicantumkan: komponen draft, obsolete, approval lama yang inactive, dan tombol Create Product NPDR yang sudah dicabut. Oppty_SCH_Reminder_Close_Date dan AOPAnnualYtdController menunggu konfirmasi status di production.</p>
+    <p>Framework lintas object: TriggerBase, MetadataTriggerHandler, TriggerAction, TriggerActionFlow (dan varian bypass), Trigger_Action__mdt, sObject_Trigger_Setting__mdt, ErrorLogUtil, MasterDataExportController, MasterDataImportController.</p>
+  </div>
+</div>
+
+<script>
+(function () {
+  const ADJ = {"lead": [1, 2], "opp": [1, 3, 4, 5, 16], "sr": [2, 3, 4, 7, 8, 9, 11, 14], "so": [9, 10], "acc": [5, 6, 17, 22], "quote": [15, 16], "sod": [10, 11, 12], "sa": [6], "oli": [7, 15, 21], "p2": [8, 13], "ser": [12, 13, 14], "fc": [18, 20, 22], "ord": [17, 18, 19, 23], "orli": [19, 20, 21, 24], "sap": [23, 24]};
+  const map = document.querySelector('svg.map');
+  const cards = document.getElementById('cards');
+  const rows = Array.from(document.querySelectorAll('#reltable tr'));
+  const text = document.getElementById('focustext');
+  const reset = document.getElementById('reset');
+  const names = {};
+  document.querySelectorAll('.node').forEach(n => { names[n.dataset.node] = n.getAttribute('aria-label'); });
+
+  function clear() {
+    map.classList.remove('focused');
+    cards.classList.remove('focused');
+    document.querySelectorAll('.on, .sel').forEach(el => el.classList.remove('on', 'sel'));
+    rows.forEach(r => { r.hidden = false; });
+    text.textContent = 'Menampilkan semua object dan ' + rows.length + ' relasi.';
+    reset.hidden = true;
+  }
+
+  function apply(edgeSet, nodeSet, label) {
+    clear();
+    map.classList.add('focused');
+    cards.classList.add('focused');
+    map.querySelectorAll('.edge, .elabel').forEach(el => {
+      if (edgeSet.has(Number(el.dataset.edge))) el.classList.add('on');
+    });
+    map.querySelectorAll('.node').forEach(el => { if (nodeSet.has(el.dataset.node)) el.classList.add('on'); });
+    cards.querySelectorAll('.card').forEach(el => { if (nodeSet.has(el.dataset.node)) el.classList.add('on'); });
+    rows.forEach(r => { r.hidden = !edgeSet.has(Number(r.dataset.edge)); });
+    text.innerHTML = label;
+    reset.hidden = false;
+  }
+
+  function focusNode(id) {
+    const edges = new Set(ADJ[id] || []);
+    const nodes = new Set([id]);
+    rows.forEach(r => { if (edges.has(Number(r.dataset.edge))) { nodes.add(r.dataset.from); nodes.add(r.dataset.to); } });
+    apply(edges, nodes, '<strong>' + names[id] + '</strong> · ' + edges.size + ' relasi');
+    const n = map.querySelector('.node[data-node="' + id + '"]');
+    if (n) n.classList.add('sel');
+  }
+
+  function focusEdge(no) {
+    const r = rows.find(x => Number(x.dataset.edge) === no);
+    if (!r) return;
+    apply(new Set([no]), new Set([r.dataset.from, r.dataset.to]),
+      '<strong>Relasi ' + no + '</strong> · ' + names[r.dataset.from] + ' → ' + names[r.dataset.to]);
+  }
+
+  map.querySelectorAll('.node').forEach(n => {
+    n.addEventListener('click', () => focusNode(n.dataset.node));
+    n.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); focusNode(n.dataset.node); } });
+  });
+  map.querySelectorAll('.edge, .elabel').forEach(el => {
+    el.style.cursor = 'pointer';
+    el.addEventListener('click', () => focusEdge(Number(el.dataset.edge)));
+  });
+  rows.forEach(r => r.addEventListener('click', () => focusEdge(Number(r.dataset.edge))));
+  cards.querySelectorAll('.card').forEach(c => {
+    c.addEventListener('click', e => {
+      const chip = e.target.closest('.relchip');
+      if (chip) { focusEdge(Number(chip.dataset.edge)); return; }
+      focusNode(c.dataset.node);
+    });
+  });
+  reset.addEventListener('click', clear);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') clear(); });
+})();
+</script>
+</body>
+
+</html>

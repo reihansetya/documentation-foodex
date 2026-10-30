@@ -4,499 +4,152 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Apex Class &amp; Test Class — 12 Agustus 2026</title>
+  <title>Apex Class &amp; Test Class — Foodex</title>
   <style>
     :root {
-      --bg: #ffffff;
-      --fg: #1b1f24;
-      --muted: #5c6672;
-      --line: #e2e6ea;
-      --accent: #0b6bcb;
-      --chip: #eef3f8;
-      --code: #f4f6f8;
-      --warn: #b45309;
-      --good: #1a7f37;
-      --good-bg: #e9f7ee;
+      --bg: #ffffff; --fg: #1b1f24; --muted: #5c6672; --line: #e2e6ea; --accent: #0b6bcb;
+      --chip: #eef3f8; --code: #f4f6f8; --good: #1a7f37; --good-bg: #e9f7ee;
+      --warn: #b45309; --warn-bg: #fdf3d6; --bad: #b42318; --bad-bg: #fdecea;
+      --flow: #0d7a70; --apex: #4b50b8; --ui: #a3600f; --appr: #8a3c7a;
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--fg);
-      font: 15px/1.65 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    .wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 40px 24px 96px;
-    }
-
-    header {
-      border-bottom: 2px solid var(--line);
-      padding-bottom: 20px;
-      margin-bottom: 32px;
-    }
-
-    h1 {
-      font-size: 28px;
-      margin: 0 0 8px;
-      letter-spacing: -.02em;
-    }
-
-    .sub {
-      color: var(--muted);
-      font-size: 14px;
-      margin: 0;
-    }
-
-    h2 {
-      font-size: 20px;
-      margin: 40px 0 4px;
-      letter-spacing: -.01em;
-    }
-
-    h2 .count {
-      color: var(--muted);
-      font-weight: 400;
-      font-size: 14px;
-    }
-
-    .meta {
-      color: var(--muted);
-      font-size: 13px;
-      margin: 0 0 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    code {
-      font-family: "Cascadia Code", Consolas, "SF Mono", monospace;
-      font-size: .88em;
-      background: var(--code);
-      padding: 1px 5px;
-      border-radius: 4px;
-    }
-
-    .scroll {
-      overflow-x: auto;
-      margin: 0 0 12px;
-    }
-
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      font-size: 14px;
-      min-width: 640px;
-      border: 1px solid var(--line);
-    }
-
-    th,
-    td {
-      padding: 12px 14px;
-      border: 1px solid var(--line);
-      vertical-align: top;
-    }
-
-    th {
-      text-align: center;
-      font-weight: 600;
-      background: var(--chip);
-    }
-
-    td {
-      text-align: left;
-    }
-
-    tbody tr:nth-child(even) {
-      background: #f7f9fb;
-    }
-
-    tbody tr:hover {
-      background: #e8eff6;
-    }
-
-    td.num {
-      text-align: center;
-      white-space: nowrap;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .pct {
-      display: inline-block;
-      font-weight: 600;
-      font-size: 13px;
-      padding: 2px 9px;
-      border-radius: 20px;
-      background: var(--good-bg);
-      color: var(--good);
-    }
-
-    .tag {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: .04em;
-      padding: 1px 7px;
-      border-radius: 20px;
-      background: var(--chip);
-      border: 1px solid var(--line);
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    .tag.warn {
-      color: var(--warn);
-      border-color: var(--warn);
-    }
-
-    .tag.existing {
-      color: #7a5c00;
-      background: #fdf3d6;
-      border-color: #e4c96b;
-    }
-
-    nav {
-      background: var(--chip);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 16px 20px;
-      margin-bottom: 8px;
-    }
-
-    nav ol {
-      margin: 0;
-      padding-left: 22px;
-      font-size: 14px;
-    }
-
-    nav li {
-      margin-bottom: 3px;
-    }
-
-    .note {
-      color: var(--muted);
-      font-size: 14px;
-      margin: 16px 0 0;
-    }
-
-    @media (max-width: 700px) {
-      .wrap {
-        padding: 24px 16px 64px;
-      }
-    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.65 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 24px 96px; }
+    .topnav { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; margin-bottom: 22px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+    .topnav a { color: var(--accent); text-decoration: none; }
+    .topnav a:hover { text-decoration: underline; }
+    .topnav a.here { color: var(--fg); font-weight: 600; pointer-events: none; }
+    header { border-bottom: 2px solid var(--line); padding-bottom: 20px; margin-bottom: 28px; }
+    h1 { font-size: 28px; margin: 0 0 8px; letter-spacing: -.02em; }
+    .sub { color: var(--muted); font-size: 14px; margin: 0; max-width: 90ch; }
+    h2 { font-size: 20px; margin: 44px 0 4px; letter-spacing: -.01em; }
+    h2 .count, h3 .count { color: var(--muted); font-weight: 400; font-size: 14px; }
+    h3 { font-size: 16px; margin: 26px 0 6px; }
+    .meta { color: var(--muted); font-size: 13px; margin: 0 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+    p, li { max-width: 90ch; }
+    a { color: var(--accent); }
+    code { font-family: "Cascadia Code", Consolas, "SF Mono", monospace; font-size: .86em; background: var(--code); padding: 1px 5px; border-radius: 4px; }
+    .scroll { overflow-x: auto; margin: 0 0 12px; }
+    table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 720px; border: 1px solid var(--line); }
+    th, td { padding: 10px 12px; border: 1px solid var(--line); vertical-align: top; }
+    th { text-align: center; font-weight: 600; background: var(--chip); }
+    td { text-align: left; }
+    tbody tr:nth-child(even) { background: #f7f9fb; }
+    tbody tr:hover { background: #e8eff6; }
+    td.num { text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .pct { display: inline-block; font-weight: 600; font-size: 13px; padding: 2px 9px; border-radius: 20px; background: var(--good-bg); color: var(--good); }
+    .pct.mid { background: var(--warn-bg); color: var(--warn); }
+    .pct.none { background: var(--chip); color: var(--muted); font-weight: 500; }
+    .tag { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .04em; padding: 1px 7px; border-radius: 20px; background: var(--chip); border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+    .tag.existing { color: #7a5c00; background: #fdf3d6; border-color: #e4c96b; }
+    .tag.bad { color: var(--bad); background: var(--bad-bg); border-color: #f4b8b2; }
+    .tag.flow { color: var(--flow); } .tag.apex { color: var(--apex); } .tag.ui { color: var(--ui); } .tag.appr { color: var(--appr); }
+    nav.toc { background: var(--chip); border: 1px solid var(--line); border-radius: 8px; padding: 16px 20px; margin-bottom: 8px; }
+    nav.toc ol { margin: 0; padding-left: 22px; font-size: 14px; columns: 2; column-gap: 32px; }
+    nav.toc li { margin-bottom: 3px; }
+    .note { border-left: 4px solid var(--warn); background: var(--warn-bg); padding: 10px 14px; border-radius: 4px; margin: 12px 0; font-size: 14px; max-width: none; }
+    .note.info { border-left-color: var(--accent); background: var(--chip); }
+    .foot { color: var(--muted); font-size: 13px; margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; margin-top: 20px; }
+    .card { display: block; border: 1px solid var(--line); border-radius: 10px; padding: 22px 24px; text-decoration: none; color: inherit; background: var(--bg); transition: border-color .15s, box-shadow .15s, transform .15s; }
+    .card:hover { border-color: var(--accent); box-shadow: 0 3px 14px rgba(11, 107, 203, .12); transform: translateY(-2px); }
+    .card h3 { margin: 0 0 6px; font-size: 17px; color: var(--accent); }
+    .card p { margin: 0 0 14px; font-size: 14px; color: var(--muted); }
+    .card ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--muted); }
+    .stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    @media (max-width: 700px) { .wrap { padding: 20px 16px 64px; } nav.toc ol { columns: 1; } h1 { font-size: 24px; } }
+    @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-
+    <div class="topnav"><a href="index.html">Menu</a><a href="apexClassWithTestClass.html" class="here">Apex Class &amp; Test Class</a><a href="lwcComponents.html">LWC &amp; Controller</a><a href="flowsApproval.html">Flow &amp; Approval</a><a href="objectMap.html">Peta Automasi per Object</a></div>
     <header>
       <h1>Apex Class &amp; Test Class</h1>
-      <p class="sub">
-        Daftar Apex class &amp; trigger dengan tanda <code>@last modified by : Reihan Setya Abida</code>, dipasangkan
-        dengan test class-nya masing-masing — Foodex Salesforce Enhancement (Phase 2).
-      </p>
-      <p class="sub" style="margin-top:12px">
-        <strong>Keterangan section:</strong> <span class="tag existing">Existing</span> = trigger/class warisan
-        (bukan buatan Reihan, tanda <code>@author : Existing</code>) yang disentuh untuk enhancement — logic lama
-        tetap dipertahankan, hanya ditambah kondisi/penyesuaian. Sisanya adalah class/trigger baru buatan Reihan
-        (<code>@author : Reihan Setya Abida</code>).
-      </p>
-      <p class="sub" style="margin-top:8px">Tanggal: 12 Agustus 2026</p>
+      <p class="sub">Seluruh Apex class dan trigger enhancement Phase 2 yang aktif, dipasangkan dengan test class dan coverage-nya. Komponen yang sudah tidak dipakai tidak dicantumkan.</p>
+      <p class="sub" style="margin-top:12px"><span class="tag existing">Existing</span> = class/trigger warisan vendor (<code>@author : Existing</code>) yang disesuaikan; logic lama tetap ada, perubahan ditandai komentar <code>// Reihan - dd-mm-yyyy</code>. Selainnya class baru (<code>@author : Reihan Setya Abida</code>).</p>
+      <p class="sub" style="margin-top:8px">23 class &amp; trigger baru &middot; 10 existing disesuaikan &middot; 30 Oktober 2026</p>
     </header>
 
-    <nav>
-      <ol>
-        <li><a href="#new">Class &amp; Trigger Baru (Reihan)</a></li>
-        <li><a href="#existing">Trigger &amp; Class Existing (Enhance)</a></li>
-        <li><a href="#lwc">LWC Baru (Reihan)</a></li>
-        <li><a href="#none">Belum Punya Test Class</a></li>
-      </ol>
-    </nav>
+    <nav class="toc"><ol>
+      <li><a href="#trigger">Trigger dispatcher</a></li>
+      <li><a href="#ta">Trigger Action</a></li>
+      <li><a href="#service">Service &amp; utility</a></li>
+      <li><a href="#controller">Controller LWC</a></li>
+      <li><a href="#report">Controller &amp; wrapper report</a></li>
+      <li><a href="#existing">Class &amp; trigger existing (enhance)</a></li>
+      <li><a href="#framework">Framework Trigger Action</a></li>
+    </ol></nav>
 
-    <h2 id="new">Class &amp; Trigger Baru (Reihan) <span class="count">— 15 pasang</span></h2>
-    <p class="meta">Seluruhnya buatan Reihan (<code>@author : Reihan Setya Abida</code>), termasuk 3 trigger
-      dispatcher Trigger Action Framework.</p>
-    <div class="scroll">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:60px">No</th>
-            <th>Apex Class / Trigger</th>
-            <th>Test Class</th>
-            <th style="width:110px">Coverage</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="num">1</td>
-            <td><code>ErrorLogUtil</code></td>
-            <td><code>ErrorLogUtilTEST</code></td>
-            <td class="num"><span class="pct">100%</span></td>
-          </tr>
-          <tr>
-            <td class="num">2</td>
-            <td><code>LeadConversionService</code></td>
-            <td><code>LeadConversionServiceTEST</code></td>
-            <td class="num"><span class="pct">100%</span></td>
-          </tr>
-          <tr>
-            <td class="num">3</td>
-            <td><code>LeadTrigger</code></td>
-            <td><code>LeadTriggerTEST</code></td>
-            <td class="num"><span class="pct">100%</span></td>
-          </tr>
-          <tr>
-            <td class="num">4</td>
-            <td><code>MasterDataExportController</code></td>
-            <td><code>MasterDataExportControllerTEST</code></td>
-            <td class="num"><span class="pct">88%</span></td>
-          </tr>
-          <tr>
-            <td class="num">5</td>
-            <td><code>MasterDataImportController</code></td>
-            <td><code>MasterDataImportControllerTEST</code></td>
-            <td class="num"><span class="pct">95%</span></td>
-          </tr>
-          <tr>
-            <td class="num">6</td>
-            <td><code>SalesActivityController</code></td>
-            <td><code>SalesActivityControllerTest</code></td>
-            <td class="num"><span class="pct">96%</span></td>
-          </tr>
-          <tr>
-            <td class="num">7</td>
-            <td><code>SampleEvaluationRequestService</code></td>
-            <td><code>SampleEvaluationRequestServiceTEST</code></td>
-            <td class="num"><span class="pct">99%</span></td>
-          </tr>
-          <tr>
-            <td class="num">8</td>
-            <td><code>SampleOfferDetailTrigger</code></td>
-            <td><code>SampleOfferDetailTriggerTEST</code></td>
-            <td class="num"><span class="pct">100%</span></td>
-          </tr>
-          <tr>
-            <td class="num">9</td>
-            <td><code>SampleRequestProductController</code></td>
-            <td><code>SampleRequestProductControllerTEST</code></td>
-            <td class="num"><span class="pct">97%</span></td>
-          </tr>
-          <tr>
-            <td class="num">10</td>
-            <td><code>SampleRequestService</code></td>
-            <td><code>SampleRequestServiceTEST</code></td>
-            <td class="num"><span class="pct">92%</span></td>
-          </tr>
-          <tr>
-            <td class="num">11</td>
-            <td><code>SampleRequestTrigger</code></td>
-            <td><code>SampleRequestTriggerTEST</code></td>
-            <td class="num"><span class="pct">100%</span></td>
-          </tr>
-          <tr>
-            <td class="num">12</td>
-            <td><code>TA_AT_Lead_AU_LeadConversion</code></td>
-            <td><code>TA_AT_Lead_AU_LeadConversionTEST</code></td>
-            <td class="num"><span class="pct">100%</span></td>
-          </tr>
-          <tr>
-            <td class="num">13</td>
-            <td><code>TA_AT_SOD_AU_CreateSER</code></td>
-            <td><code>TA_AT_SOD_AU_CreateSERTEST</code></td>
-            <td class="num"><span class="pct">100%</span></td>
-          </tr>
-          <tr>
-            <td class="num">14</td>
-            <td><code>TA_AT_SR_AU_ProductOliCreation</code></td>
-            <td><code>TA_AT_SR_AU_ProductOliCreationTEST</code></td>
-            <td class="num"><span class="pct">100%</span></td>
-          </tr>
-          <tr>
-            <td class="num">15</td>
-            <td><code>OpptyCreateFromDroppedSRController</code></td>
-            <td><code>OpptyCreateFromDroppedSRControllerTEST</code></td>
-            <td class="num"><span class="pct">85%</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <h2 id="existing">Trigger &amp; Class Existing (Enhance) <span class="count">— 5 pasang</span></h2>
-    <p class="meta">Warisan vendor sebelumnya (<code>@author : Existing</code>) — yang dikerjakan hanya perbaikan bug /
-      tambah
-      kondisi, bukan build baru. Kode lama tetap ada, tidak dihapus.</p>
-    <div class="scroll">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:60px">No</th>
-            <th>Apex Class / Trigger</th>
-            <th>Visualforce Page</th>
-            <th>Test Class</th>
-            <th style="width:110px">Coverage</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="num">1</td>
-            <td><code>Sample_Offer_Generate_PDF_Ctrl</code></td>
-            <td><code>Sample_Offer_Generate_PDF.page</code></td>
-            <td><code>Sample_Offer_Generate_PDF_Ctrl_test</code></td>
-            <td class="num"><span class="pct">95%</span></td>
-          </tr>
-          <tr>
-            <td class="num">2</td>
-            <td><code>SampleRequest_cekEstimateNotNull</code></td>
-            <td>&mdash;</td>
-            <td><code>SampleRequest_cekEstimateNotNullTEST</code></td>
-            <td class="num"><span class="pct">81%</span></td>
-          </tr>
-          <tr>
-            <td class="num">3</td>
-            <td><code>Trigger_Sample_Request</code></td>
-            <td>&mdash;</td>
-            <td><code>Test_Sample_Request</code></td>
-            <td class="num"><span class="pct">90%</span></td>
-          </tr>
-          <tr>
-            <td class="num">4</td>
-            <td><code>Trigger_SampleOffer_Detail_Status</code></td>
-            <td>&mdash;</td>
-            <td><code>Trigger_SampleOffer_Detail_StatusTEST</code></td>
-            <td class="num"><span class="pct">100%</span></td>
-          </tr>
-          <tr>
-            <td class="num">5</td>
-            <td><code>VF_Bon_Sample_controller</code></td>
-            <td><code>VF_Bon_Sample_IDR.page</code></td>
-            <td><code>VF_Bon_Sample_controller_test</code></td>
-            <td class="num"><span class="pct">100%</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <h2 id="lwc">LWC Baru (Reihan) <span class="count">— 11 komponen</span></h2>
-    <p class="meta">Seluruhnya buatan Reihan (<code>@author : Reihan Setya Abida</code>). LWC tidak diukur via
-      <code>sf apex run test</code> — coverage di sini tidak berlaku.
-    </p>
-    <div class="scroll">
-      <table>
-        <thead>
-          <tr>
-            <th style="width:60px">No</th>
-            <th>LWC Component</th>
-            <th style="width:140px">Last Modified</th>
-            <th>Keterangan</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="num">1</td>
-            <td><code>lwc_SalesActivityCheckInOut</code></td>
-            <td class="num">07-10-2026</td>
-            <td>Check-in / Check-out sales activity</td>
-          </tr>
-          <tr>
-            <td class="num">2</td>
-            <td><code>lwc_AccountCsvTemplate</code></td>
-            <td class="num">07-11-2026</td>
-            <td>Template CSV untuk import Account</td>
-          </tr>
-          <tr>
-            <td class="num">3</td>
-            <td><code>lwc_ProductCsvImport</code></td>
-            <td class="num">07-27-2026</td>
-            <td>Import master data Product via CSV</td>
-          </tr>
-          <tr>
-            <td class="num">4</td>
-            <td><code>lwc_OpptyCsvTemplate</code></td>
-            <td class="num">08-03-2026</td>
-            <td>Template CSV untuk import Opportunity</td>
-          </tr>
-          <tr>
-            <td class="num">5</td>
-            <td><code>lwc_OpportunityCsvImport</code></td>
-            <td class="num">08-03-2026</td>
-            <td>Import master data Opportunity via CSV</td>
-          </tr>
-          <tr>
-            <td class="num">6</td>
-            <td><code>lwc_SampleRequestCsvImport</code></td>
-            <td class="num">08-04-2026</td>
-            <td>Import master data Sample Request via CSV</td>
-          </tr>
-          <tr>
-            <td class="num">7</td>
-            <td><code>lwc_SampleRequestCsvTemplate</code></td>
-            <td class="num">08-04-2026</td>
-            <td>Template CSV untuk import Sample Request</td>
-          </tr>
-          <tr>
-            <td class="num">8</td>
-            <td><code>lwc_SampleRequestCreateProduct</code></td>
-            <td class="num">—</td>
-            <td>Tombol Create Product NPDR di record page Sample Request</td>
-          </tr>
-          <tr>
-            <td class="num">9</td>
-            <td><code>lwc_OpptyCreateFromDroppedSR</code></td>
-            <td class="num">08-10-2026</td>
-            <td>Buat Opportunity baru dari SR yang di-drop; berpasangan dengan
-              <code>OpptyCreateFromDroppedSRController</code>
-            </td>
-          </tr>
-          <tr>
-            <td class="num">10</td>
-            <td><code>lwc_ProductCsvTemplate</code></td>
-            <td class="num">08-12-2026</td>
-            <td>Export master data Product ke CSV</td>
-          </tr>
-          <tr>
-            <td class="num">11</td>
-            <td><code>lwc_OpptyClosedWonCsvTemplate</code></td>
-            <td class="num">08-12-2026</td>
-            <td>Export Opportunity Closed Won ke CSV</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <h2 id="none">Belum Punya Test Class</h2>
-    <div class="scroll">
-      <table>
-        <thead>
-          <tr>
-            <th>Apex Class</th>
-            <th>Status</th>
-            <th>Catatan</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><code>ProductService</code></td>
-            <td><span class="tag warn">Belum dipakai</span></td>
-            <td>Body kosong — dikonfirmasi belum dipakai. Kandidat dihapus, bukan dites.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p class="note">
-      Sumber: hasil <code>sf apex run test</code> per class-name, run tanggal 4 Agustus 2026 s.d. 12 Agustus 2026, org
-      <code>saastendev28@saasten.com.sb1</code>. Angka coverage per baris diambil dari kolom Percent hasil run
-      masing-masing, bukan aggregate historis. <code>SampleRequest_cekEstimateNotNull</code>: satu skenario
-      (Approval_Status__c = Approved tanpa Estimate Finish Date) tidak bisa dites langsung karena sudah ditolak
-      validation rule org sendiri sebelum logic trigger relevan.
-    </p>
-
+<h2 id="trigger">Trigger dispatcher <span class="count">— 4</span></h2><p class="meta">Satu trigger per object, isinya hanya <code>new MetadataTriggerHandler().run();</code>. Logic ada di Trigger Action.</p>
+<div class="scroll"><table><thead><tr><th style="width:56px">No</th><th>Trigger</th><th>Object</th><th>Test Class</th><th style="width:120px">Coverage</th></tr></thead><tbody>
+<tr><td class="num">1</td><td><code>LeadTrigger</code></td><td><code>Lead</code></td><td><code>LeadTriggerTEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+<tr><td class="num">2</td><td><code>SampleRequestTrigger</code></td><td><code>Sample_Request__c</code></td><td><code>SampleRequestTriggerTEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+<tr><td class="num">3</td><td><code>SampleOfferDetailTrigger</code></td><td><code>Sample_Offer_Detail__c</code></td><td><code>SampleOfferDetailTriggerTEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+<tr><td class="num">4</td><td><code>SampleEvaluationRequestTrigger</code></td><td><code>Sample_Evaluation_Request__c</code></td><td><code>SampleEvaluationRequestTriggerTEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+</tbody></table></div>
+<h2 id="ta">Trigger Action <span class="count">— 5</span></h2><p class="meta">Semua berjalan di after update. Registrasi, urutan, dan bypass ada di Custom Metadata <code>Trigger_Action__mdt</code> (record hanya ada di org).</p>
+<div class="scroll"><table><thead><tr><th style="width:56px">No</th><th>Trigger Action</th><th style="width:150px">Object · Event</th><th>Kondisi &amp; hasil</th><th>Test Class</th><th style="width:110px">Coverage</th></tr></thead><tbody>
+<tr><td class="num">1</td><td><code>TA_AT_Lead_AU_LeadConversion</code></td><td>Lead · after update</td><td>Lead baru di-convert: Type Opportunity = New Business, SR terpilih dipindah ke Opportunity dan Account hasil convert.</td><td><code>TA_AT_Lead_AU_LeadConversionTEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+<tr><td class="num">2</td><td><code>TA_AT_SR_AU_ProductOliCreation</code></td><td>Sample_Request__c · after update</td><td>SR berubah ke Finish, punya Opportunity, belum punya OLI, RM Cost terisi: resolve Product2 NPDR lalu buat OLI.</td><td><code>TA_AT_SR_AU_ProductOliCreationTEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+<tr><td class="num">3</td><td><code>TA_AT_SR_AU_FinishSRWithOLI</code></td><td>Sample_Request__c · after update</td><td>SR Finish yang sudah punya OLI (mis. setelah sync SER): refresh data OLI dan pindahkan ke Product baru bila berubah.</td><td><code>TA_AT_SR_AU_FinishSRWithOLITEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+<tr><td class="num">4</td><td><code>TA_AT_SOD_AU_CreateSER</code></td><td>Sample_Offer_Detail__c · after update</td><td>Customer Feedback berubah menjadi Improvement: buat SER Archive + Evaluation (ronde berikutnya hanya Evaluation).</td><td><code>TA_AT_SOD_AU_CreateSERTEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+<tr><td class="num">5</td><td><code>TA_AT_SER_AU_CreateProduct</code></td><td>Sample_Evaluation_Request__c · after update</td><td>SER Evaluation berubah ke Sample Finish dengan Code Product terisi: resolve Product2 ke SER.Product__c.</td><td><code>TA_AT_SER_AU_CreateProductTEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+</tbody></table></div>
+<h2 id="service">Service &amp; utility <span class="count">— 5</span></h2><p class="meta">Logic bisnis bulk; dipanggil dari Trigger Action, controller, dan trigger existing.</p>
+<div class="scroll"><table><thead><tr><th style="width:56px">No</th><th>Class</th><th>Fungsi</th><th>Method utama</th><th>Test Class</th><th style="width:110px">Coverage</th></tr></thead><tbody>
+<tr><td class="num">1</td><td><code>SampleRequestService</code></td><td>Penomoran SR (MAX + 1 per tipe/bulan/tahun), pembuatan OLI saat Finish, resync OLI setelah sync SER.</td><td><code>assignSampleRequestNumbers</code>, <code>createOLIFromFinishedSr</code>, <code>resyncOliProductFromFinishedSr</code></td><td><code>SampleRequestServiceTEST</code></td><td class="num"><span class="pct">85%</span></td></tr>
+<tr><td class="num">2</td><td><code>SampleEvaluationRequestService</code></td><td>Pembuatan SER dari feedback Improvement; resolve Product2 saat SER Finish.</td><td><code>createFromImprovementFeedback</code>, <code>resolveProductForFinishedSer</code></td><td><code>SampleEvaluationRequestServiceTEST</code></td><td class="num"><span class="pct">98%</span></td></tr>
+<tr><td class="num">3</td><td><code>ProductService</code></td><td>Resolve Product2 dari Product Code: pakai yang sudah ada, buat baru bila belum. SR NPDR tanpa Code Product ditolak saat Finish.</td><td><code>resolveProductForNpdr</code>, <code>resolveProductByCode</code></td><td><code>ProductServiceTEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+<tr><td class="num">4</td><td><code>LeadConversionService</code></td><td>Proses Lead yang baru di-convert: Type Opportunity dan pemindahan SR terpilih.</td><td><code>processConvertedLeadSampleRequests</code></td><td><code>LeadConversionServiceTEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+<tr><td class="num">5</td><td><code>ErrorLogUtil</code></td><td>Menyimpan exception ke Error_Log__c (tidak di-rethrow). Inner class FlowErrorLogger untuk dipanggil dari Flow.</td><td><code>errorLog</code></td><td><code>ErrorLogUtilTEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+</tbody></table></div>
+<h2 id="controller">Controller LWC <span class="count">— 4</span></h2><p class="meta">Controller tipis; detail pemanggil per method ada di halaman <a href="lwcComponents.html#controller">LWC &amp; Controller</a>.</p>
+<div class="scroll"><table><thead><tr><th style="width:56px">No</th><th>Class</th><th>Dipakai oleh</th><th>Method</th><th>Test Class</th><th style="width:110px">Coverage</th></tr></thead><tbody>
+<tr><td class="num">1</td><td><code>MasterDataExportController</code></td><td>LWC template &amp; export CSV</td><td><code>getAccounts</code>, <code>getEndCustomerRecordTypeId</code>, <code>getProducts</code>, <code>getAllOpportunity</code>, <code>getClosedWonOpportunities</code>, <code>getClosedWonOpportunityCount</code></td><td><code>MasterDataExportControllerTEST</code></td><td class="num"><span class="pct">88%</span></td></tr>
+<tr><td class="num">2</td><td><code>MasterDataImportController</code></td><td>LWC import CSV</td><td><code>importProducts</code>, <code>importOpportunity</code>, <code>importSampleRequest</code>, <code>importForecast</code></td><td><code>MasterDataImportControllerTEST</code></td><td class="num"><span class="pct">95%</span></td></tr>
+<tr><td class="num">3</td><td><code>OpptyCreateFromDroppedSRController</code></td><td>lwc_OpptyCreateFromDroppedSR</td><td><code>getDroppedSampleRequests</code>, <code>createOpportunityFromDroppedSr</code></td><td><code>OpptyCreateFromDroppedSRControllerTEST</code></td><td class="num"><span class="pct">86%</span></td></tr>
+<tr><td class="num">4</td><td><code>SalesActivityController</code></td><td>lwc_SalesActivityCheckInOut</td><td><code>saveSalesActivity</code></td><td><code>SalesActivityControllerTest</code></td><td class="num"><span class="pct">96%</span></td></tr>
+</tbody></table></div>
+<p class="note info">Test class <code>SalesActivityControllerTest</code> penamaannya belum ikut konvensi <code>...TEST</code> (kapital).</p>
+<h2 id="report">Controller &amp; wrapper report <span class="count">— 5</span></h2><p class="meta">Dipakai <code>lwc_aopPerformanceReport</code> dan <code>lwc_ProductSalesPerformanceReport</code>.</p>
+<div class="scroll"><table><thead><tr><th style="width:56px">No</th><th>Class</th><th>Fungsi</th><th>Test Class</th><th style="width:110px">Coverage</th></tr></thead><tbody>
+<tr><td class="num">1</td><td><code>AOPPerformanceController</code></td><td>Data AOP bulanan per Customer Group &amp; Product Segment.</td><td><code>AOPPerformanceControllerTEST</code></td><td class="num"><span class="pct">95%</span></td></tr>
+<tr><td class="num">2</td><td><code>ProductSalesPerformanceController</code></td><td>Report Product &amp; Customer: Forecast, Order, Delivery, Actual YTD, Annual AOP, tren bulanan.</td><td><code>ProductSalesPerformanceControllerTEST</code></td><td class="num"><span class="pct">98%</span></td></tr>
+<tr><td class="num">3</td><td><code>AOPReportRow</code></td><td>Wrapper baris report AOP.</td><td><code>AOPReportRowTEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+<tr><td class="num">4</td><td><code>ProductSalesPerformanceRow</code></td><td>Wrapper baris report Product Sales Performance.</td><td><code>ProductSalesPerformanceRowTEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+<tr><td class="num">5</td><td><code>SalesPerformanceMonthlyTrendRow</code></td><td>Wrapper tren bulanan.</td><td><code>SalesPerformanceMonthlyTrendRowTEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+</tbody></table></div>
+<h2 id="existing">Class &amp; trigger existing (enhance) <span class="count">— 10</span></h2><p class="meta"><span class="tag existing">Existing</span> Warisan vendor sebelumnya; yang dikerjakan hanya perbaikan bug / penyesuaian.</p>
+<div class="scroll"><table><thead><tr><th style="width:56px">No</th><th>Komponen</th><th style="width:72px">Tipe</th><th>Visualforce Page</th><th>Perubahan</th><th>Test Class</th><th style="width:120px">Coverage</th></tr></thead><tbody>
+<tr><td class="num">1</td><td><code>Trigger_Sample_Request</code></td><td>Trigger</td><td>—</td><td>Penomoran SR didelegasikan ke SampleRequestService (fix nomor dobel); DML dipindah keluar loop; guard perubahan Indication_RM_Cost__c (fix UNABLE_TO_LOCK_ROW).</td><td><code>Test_Sample_Request</code></td><td class="num"><span class="pct mid">75%</span></td></tr>
+<tr><td class="num">2</td><td><code>SampleRequest_cekEstimateNotNull</code></td><td>Trigger</td><td>—</td><td>SOQL ProcessInstance keluar dari loop; nama approval diganti ke SR_Manufacturing_Approval / SR_Trading_Approval.</td><td><code>SampleRequest_cekEstimateNotNullTEST</code></td><td class="num"><span class="pct">89%</span></td></tr>
+<tr><td class="num">3</td><td><code>Trigger_SampleOffer_Detail_Status</code></td><td>Trigger</td><td>—</td><td>Blok clone Opportunity untuk Improvement di-comment (digantikan SER).</td><td><code>Trigger_SampleOffer_Detail_StatusTEST</code></td><td class="num"><span class="pct">100%</span></td></tr>
+<tr><td class="num">4</td><td><code>CopyCustomerFeedbackTrigger</code></td><td>Trigger</td><td>—</td><td>Menyalin Customer_Feedback__c SOD ke SR.Customer_Feedback2__c.</td><td>—</td><td class="num"><span class="pct none">belum tercatat</span></td></tr>
+<tr><td class="num">5</td><td><code>Product_UpdatePrice</code></td><td>Trigger</td><td>—</td><td>Insert PricebookEntry &amp; SOQL dipindah keluar loop (fix Too many DML statements: 151 saat import Product).</td><td><code>Product_UpdatePrice_test</code></td><td class="num"><span class="pct none">belum tercatat</span></td></tr>
+<tr><td class="num">6</td><td><code>Sample_Offer_Generate_PDF_Ctrl</code></td><td>Apex</td><td><code>Sample_Offer_Generate_PDF.page</code></td><td>Layout PDF dibedakan Manufacturing / Trading dari Product Type Sample Offer Detail.</td><td><code>Sample_Offer_Generate_PDF_Ctrl_test</code></td><td class="num"><span class="pct">95%</span></td></tr>
+<tr><td class="num">7</td><td><code>VF_Bon_Sample_controller</code></td><td>Apex</td><td><code>VF_Bon_Sample_IDR.page</code></td><td>Layout PDF Quote dibedakan Manufacturing / Trading (fallback Trading).</td><td><code>VF_Bon_Sample_controller_test</code></td><td class="num"><span class="pct">100%</span></td></tr>
+<tr><td class="num">8</td><td><code>Create_SampleOfferOppty_Ctrl</code></td><td>Apex</td><td><code>Create_SampleOfferOppty.page</code></td><td>Skip update Opportunity/OLI untuk SR general promo; perbaikan redirect dan pesan error.</td><td><code>Create_SampleOfferOppty_Test</code></td><td class="num"><span class="pct none">belum tercatat</span></td></tr>
+<tr><td class="num">9</td><td><code>Opportunity_Sample_Request_controller</code></td><td>Apex</td><td>—</td><td>Dosage__c sekarang Text; konversi Double.valueOf dibuang.</td><td><code>Opportunity_Sample_Request_ctr_test</code></td><td class="num"><span class="pct none">belum tercatat</span></td></tr>
+<tr><td class="num">10</td><td><code>QuoteProductEntry_fromOpty_controller</code></td><td>Apex</td><td>—</td><td>Penyesuaian 20/08/2026 (tercatat UPDATE di MOP).</td><td><code>QuoteProductEntry_fromOpty_ctr_test</code></td><td class="num"><span class="pct none">belum tercatat</span></td></tr>
+</tbody></table></div>
+<p class="note info">"belum tercatat" = coverage komponen ini tidak tercatat pada MOP. Jalankan <code>sf apex run test -n &lt;TestClass&gt;</code> untuk angka terbaru.</p>
+<h2 id="framework">Framework Trigger Action <span class="count">— 10 class</span></h2><p class="meta">Trigger Actions Framework yang dipakai seluruh trigger baru. Konfigurasi di Custom Metadata <code>Trigger_Action__mdt</code> dan <code>sObject_Trigger_Setting__mdt</code>.</p>
+<div class="scroll"><table><thead><tr><th style="width:56px">No</th><th>Class</th><th>Test Class</th></tr></thead><tbody>
+<tr><td class="num">1</td><td><code>TriggerBase</code></td><td><code>TriggerBaseTest</code></td></tr>
+<tr><td class="num">2</td><td><code>MetadataTriggerHandler</code></td><td><code>MetadataTriggerHandlerTest</code></td></tr>
+<tr><td class="num">3</td><td><code>TriggerAction</code></td><td>—</td></tr>
+<tr><td class="num">4</td><td><code>FlowTriggerRecord</code></td><td><code>FlowTriggerRecordTest</code></td></tr>
+<tr><td class="num">5</td><td><code>TriggerActionFlow</code></td><td><code>TriggerActionFlowTest</code></td></tr>
+<tr><td class="num">6</td><td><code>TriggerActionFlowAddError</code></td><td><code>TriggerActionFlowAddErrorTest</code></td></tr>
+<tr><td class="num">7</td><td><code>TriggerActionFlowBypass</code></td><td><code>TriggerActionFlowBypassTest</code></td></tr>
+<tr><td class="num">8</td><td><code>TriggerActionFlowClearBypass</code></td><td><code>TriggerActionFlowClearBypassTest</code></td></tr>
+<tr><td class="num">9</td><td><code>TriggerActionFlowClearAllBypasses</code></td><td><code>TriggerActionFlowClearAllBypassesTest</code></td></tr>
+<tr><td class="num">10</td><td><code>TriggerActionFlowIsBypassed</code></td><td><code>TriggerActionFlowIsBypassedTest</code></td></tr>
+</tbody></table></div>
+<p class="note info">Coverage diambil dari kolom Test Class % pada sheet Deployment Items MOP (deploy production 27&ndash;28 Agustus 2026). Seluruh class baru yang aktif sudah memiliki test class.</p>
+    <p class="foot">Sumber: source repository <code>SB1FoodexReihan</code> (<code>force-app/main/default</code>) per 29 Oktober 2026 dan sheet Deployment Items pada MOP <code>L.00387.08.26.DHU.C</code> (deploy production 27&ndash;28 Agustus 2026). Hanya komponen yang aktif dan dipakai yang dicantumkan. Diperbarui 30 Oktober 2026.</p>
   </div>
 </body>
 
